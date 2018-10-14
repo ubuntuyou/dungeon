@@ -1,9 +1,4 @@
-dungeon.cpr
+*.cpr
 
 
-
-screenchange&sprite.lst
-
-
-
-screenchange&sprite.nes
+*.lst

@@ -1379,12 +1379,12 @@ NMI:
     pha
     tya
     pha
-    
+
     lda #$00
     sta $2003
     lda #$02
     sta $4014
-    
+
 drawBkgRoutine:
     lda needDraw
     beq NMIroutine
