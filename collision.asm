@@ -169,9 +169,9 @@ getBGtype:
     sta spriteYpos
 
     ldx nametable
-    lda backgroundL,x
+    lda bkgL,x
     sta collisionPtr
-    lda backgroundH,x
+    lda bkgH,x
     sta collisionPtr+1
     
     ldy spriteYpos

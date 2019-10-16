@@ -86,14 +86,14 @@ drawBkg:
     sta PPU_Address
 
     ldx nametable
-    lda backgroundL,x
+    lda bkgL,x
     sta screenPtr
-    lda backgroundH,x
+    lda bkgH,x
     sta screenPtr+1
 
-    lda attributeL,x
+    lda atbL,x
     sta attributePtr
-    lda attributeH,x
+    lda atbH,x
     sta attributePtr+1
 
     lda itemHeadersL,x
@@ -127,6 +127,7 @@ itemLoop:
     bvc itemLoop
 
 fillLoop:
+
     lda #$FE
     sta itemRAM,y
     iny
@@ -203,8 +204,8 @@ fillPPUbufferDone:
     rts
 
 itemHeadersL:
-    .dl itemHeader00, itemHeader01, itemHeader02, itemHeader03
-    .dsb $0C,$00
+    .dl itemHeader00, itemHeader01, itemHeader02, itemHeader03, itemHeader04
+    .dsb $0B,$00
     .dl itemHeader10, itemHeader11, itemHeader12, itemHeader13 
     .dsb $0C,$00
     .dl itemHeader20, itemHeader21, itemHeader22, itemHeader23
@@ -213,8 +214,8 @@ itemHeadersL:
     .dsb $0C,$00
 
 itemHeadersH:
-    .dh itemHeader00, itemHeader01, itemHeader02, itemHeader03
-    .dsb $0C,$00
+    .dh itemHeader00, itemHeader01, itemHeader02, itemHeader03, itemHeader04
+    .dsb $0B,$00
     .dh itemHeader10, itemHeader11, itemHeader12, itemHeader13
     .dsb $0C,$00
     .dh itemHeader20, itemHeader21, itemHeader22, itemHeader23
@@ -223,8 +224,8 @@ itemHeadersH:
     .dsb $0C,$00
     
 itemFlags:
-    .db %00000011, %00000001, %00000000, %00000000
-    .dsb $0C,$00
+    .db %00000111, %00000001, %00000000, %00000000, %00000000
+    .dsb $0B,$00
     .db %00000111, %00000000, %00000011, %00000000
     .dsb $0C,$00
     .db %00000000, %00000001, %00000000, %00000000
@@ -232,8 +233,8 @@ itemFlags:
     .db %00000000, %00000000, %00000000, %00000001
     .dsb $0C,$00
 
-chestOffset:
-    .db $00, $04, $08, $0C, $10, $14, $18, $1C
+;chestOffset:
+;    .db $00, $04, $08, $0C, $10, $14, $18, $1C
 
 chestConstants:
     .db $00, $10, $20, $30, $40, $50, $60, $70
@@ -248,6 +249,8 @@ itemHeader00:
     .db $6F,$30,%01000001,$88
     .db $77,$32,%00000001,$80
     .db $77,$32,%01000001,$88
+    
+    .db $5F,$40,%00000011,$90
     .db $FE
 
 itemHeader01:
@@ -258,8 +261,8 @@ itemHeader01:
     .db $FE
     
 itemHeader02:
-    .db $FE
 itemHeader03:
+itemHeader04:
     .db $FE
 
 itemHeader10:

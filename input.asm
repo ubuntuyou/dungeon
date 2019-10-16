@@ -87,9 +87,9 @@ readUp:
     stx animConstNumber+2
     rts
 checkNametableUp:
-    lda nametable
-    and #$F0
-    beq readUpDone
+;    lda nametable
+;    and #$F0
+;    beq readUpDone
     lda nametable
     sec
     sbc #$10
@@ -136,10 +136,10 @@ readDown:
     stx animConstNumber+2
     rts
 checkNametableDown:
-    lda nametable
-    and #$F0
-    cmp #$30
-    beq readDownDone
+;    lda nametable
+;    and #$F0
+;    cmp #$30
+;    beq readDownDone
     lda nametable
     clc
     adc #$10
@@ -186,9 +186,9 @@ readLeft:
     stx animConstNumber+2
     rts
 checkNametableLeft:
-    lda nametable
-    and #$0F
-    beq readLeftDone
+;    lda nametable
+;    and #$0F
+;    beq readLeftDone
     dec nametable
     inc needDraw
     lda #$00
@@ -232,10 +232,10 @@ readRight:
     stx animConstNumber+2
     rts
 checkNametableRight
-    lda nametable
-    and #$0F
-    cmp #$03
-    beq readRightDone
+    ;lda nametable
+    ;and #$0F
+    ;cmp #$03
+    ;beq readRightDone
     inc nametable
     inc needDraw
     lda #$00
