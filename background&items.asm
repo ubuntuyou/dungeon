@@ -2,21 +2,21 @@
 ;;;   METATILES   ;;;
 ;;;;;;;;;;;;;;;;;;;;;
 
-    ;;;  00   01   02   03   04   05   06   07   08
+    ;;;  00   01   02   03   04   05   06   07   08   09
 topLeft:
-    .db $00, $02, $04, $0E, $22, $24, $26, $28, $EE
+    .db $00, $02, $04, $0E, $22, $24, $26, $28, $EE, $0A
 
 topRight:
-    .db $01, $03, $05, $0F, $23, $25, $27, $29, $EF
+    .db $01, $03, $05, $0F, $23, $25, $27, $29, $EF, $0B
 
 bottomLeft:
-    .db $10, $12, $14, $1E, $32, $25, $36, $38, $FE
+    .db $10, $12, $14, $1E, $32, $25, $36, $38, $FE, $1A
 
 bottomRight:
-    .db $11, $13, $15, $1F, $33, $24, $37, $39, $FF
+    .db $11, $13, $15, $1F, $33, $24, $37, $39, $FF, $1B
     
 metaAtb:
-    .db $01, $01, $01, $01, $00, $00, $00, $00, $01
+    .db $01, $01, $01, $01, $00, $00, $00, $00, $01, $01
 
 metaBackground:
     lda #$00
@@ -65,7 +65,7 @@ metaBackgroundDone:
     rts
 
 loadAttributes:
-    ldy #$00
+    ldy #$00                ; Load background attributes to PPU
 @loop:
     lda (attributePtr),y
     sta PPU_Data
@@ -103,13 +103,13 @@ drawBkg:
 
     jsr metaBackground      ; Draw the background and attributes, fill textbox buffer
     jsr loadAttributes      ; Check if chests need drawn and if they have already been opened
-    jsr fillPPUbuffer       
-    jsr loadItems           
-    jsr openChests
+    jsr fillPPUbuffer       ; Copy background to buffer
+    jsr loadItems           ; Load chests, tablets, etc.
+;    jsr openChests          ; Open chests if present and flag is clear
     ldx #$00
-    stx needDraw
+    stx needDraw            ; Clear draw flag
     inx
-    stx gameState
+    stx gameState           ; Now we're playing (with power)
 drawBkgDone:
     rts
 
@@ -117,10 +117,10 @@ drawBkgDone:
 ;         Use system similar to loadItems to load enemies
 
 loadItems:
-    ldy #$00
+    ldy #$00                ; Loads item sprites to sprite ram
 itemLoop:
     lda (itemPtr),y
-    cmp #$FE
+;    cmp #$FE
     beq fillLoop
     sta itemRAM,y
     iny
@@ -137,7 +137,7 @@ loadItemsDone:
     rts
 
 openChests:
-    lda #$00
+    lda #$00                ; Opens chests if present and corresponding flag is clear
     sta chestNo
     ldx nametable
     lda itemSoftFlags,x
@@ -159,7 +159,7 @@ openChests:
     bne @loop
 openChestsDone:
     rts
-    
+
 loadFlags:
     ldx #$00
 @loop:
@@ -170,9 +170,9 @@ loadFlags:
     bne @loop
 loadFlagsDone:
     rts
-    
+
 fillPPUbuffer:
-    lda PPU_Status
+    lda PPU_Status          ; Makes a copy of background information to restore after textbox
     lda #$20
     sta PPU_Address
     lda #$20
@@ -240,91 +240,90 @@ chestConstants:
     .db $00, $10, $20, $30, $40, $50, $60, $70
 
 itemHeader00:
-    .db $6F,$30,%00000001,$70
-    .db $6F,$30,%01000001,$78
-    .db $77,$32,%00000001,$70
-    .db $77,$32,%01000001,$78
+    .db $6F,$33,%00000010,$70
+    .db $6F,$33,%01000010,$78
+    .db $77,$34,%00000010,$70
+    .db $77,$34,%01000010,$78
 
-    .db $6F,$30,%00000001,$80
-    .db $6F,$30,%01000001,$88
-    .db $77,$32,%00000001,$80
-    .db $77,$32,%01000001,$88
-    
-    .db $5F,$40,%00000011,$90
-    .db $FE
+    .db $6F,$33,%00000010,$80
+    .db $6F,$33,%01000010,$88
+    .db $77,$34,%00000010,$80
+    .db $77,$34,%01000010,$88
+
+    .db $00
 
 itemHeader01:
-    .db $5F,$30,%00000001,$70
-    .db $5F,$30,%01000001,$78
-    .db $67,$32,%00000001,$70
-    .db $67,$32,%01000001,$78
-    .db $FE
+    .db $5F,$33,%00000010,$70
+    .db $5F,$33,%01000010,$78
+    .db $67,$34,%00000010,$70
+    .db $67,$34,%01000010,$78
+    .db $00
     
 itemHeader02:
 itemHeader03:
 itemHeader04:
-    .db $FE
+    .db $00
 
 itemHeader10:
-    .db $4F,$30,%00000001,$30
-    .db $4F,$30,%01000001,$38
-    .db $57,$32,%00000001,$30
-    .db $57,$32,%01000001,$38
+    .db $4F,$33,%00000010,$30
+    .db $4F,$33,%01000010,$38
+    .db $57,$34,%00000010,$30
+    .db $57,$34,%01000010,$38
 
-    .db $4F,$30,%00000001,$40
-    .db $4F,$30,%01000001,$48
-    .db $57,$32,%00000001,$40
-    .db $57,$32,%01000001,$48
+    .db $4F,$33,%00000010,$40
+    .db $4F,$33,%01000010,$48
+    .db $57,$34,%00000010,$40
+    .db $57,$34,%01000010,$48
     
-    .db $4F,$30,%00000001,$50
-    .db $4F,$30,%01000001,$58
-    .db $57,$32,%00000001,$50
-    .db $57,$32,%01000001,$58
-    .db $FE
+    .db $4F,$33,%00000010,$50
+    .db $4F,$33,%01000010,$58
+    .db $57,$34,%00000010,$50
+    .db $57,$34,%01000010,$58
+    .db $00
 
 itemHeader11:
-    .db $FE
+    .db $00
 
 itemHeader12:
-    .db $7F,$30,%00000001,$30
-    .db $7F,$30,%01000001,$38
-    .db $87,$32,%00000001,$30
-    .db $87,$32,%01000001,$38
+    .db $7F,$33,%00000010,$30
+    .db $7F,$33,%01000010,$38
+    .db $87,$34,%00000010,$30
+    .db $87,$34,%01000010,$38
 
-    .db $9F,$30,%00000001,$A0
-    .db $9F,$30,%01000001,$A8
-    .db $A7,$32,%00000001,$A0
-    .db $A7,$32,%01000001,$A8
-    .db $FE
+    .db $9F,$33,%00000010,$A0
+    .db $9F,$33,%01000010,$A8
+    .db $A7,$34,%00000010,$A0
+    .db $A7,$34,%01000010,$A8
+    .db $00
 
 itemHeader13:
-    .db $FE
+    .db $00
 
 itemHeader20:
-    .db $FE
+    .db $00
 
 itemHeader21:
-    .db $9F,$30,%00000001,$A0
-    .db $9F,$30,%01000001,$A8
-    .db $A7,$32,%00000001,$A0
-    .db $A7,$32,%01000001,$A8
-    .db $FE
+    .db $9F,$33,%00000010,$A0
+    .db $9F,$33,%01000010,$A8
+    .db $A7,$34,%00000010,$A0
+    .db $A7,$34,%01000010,$A8
+    .db $00
 
 itemHeader22:
-    .db $FE
+    .db $00
 
 itemHeader23:
-    .db $FE
+    .db $00
 
 itemHeader30:
-    .db $FE
+    .db $00
 itemHeader31:
-    .db $FE
+    .db $00
 itemHeader32:
-    .db $FE
+    .db $00
 itemHeader33:
-    .db $9F,$30,%00000001,$A0
-    .db $9F,$30,%01000001,$A8
-    .db $A7,$32,%00000001,$A0
-    .db $A7,$32,%01000001,$A8
-    .db $FE
+    .db $9F,$33,%00000010,$A0
+    .db $9F,$33,%01000010,$A8
+    .db $A7,$34,%00000010,$A0
+    .db $A7,$34,%01000010,$A8
+    .db $00

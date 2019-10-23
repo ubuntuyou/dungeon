@@ -39,6 +39,7 @@ readA:
     lda #$00
     sta chestNo
     jsr checkChests
+    
 readAdone:
     rts
 

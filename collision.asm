@@ -1,6 +1,6 @@
 checkCollision:
 up:
-    lda upIsPressed
+    lda upIsPressed         ; Checks player's hotspots for collision with background
     beq down
     lda playerY
     clc
@@ -47,7 +47,7 @@ left:
     lda leftIsPressed
     beq right
     lda playerY
-    clc 
+    clc
     adc #$11
     sta spriteY
     lda playerX
@@ -55,7 +55,7 @@ left:
     sbc #$03
     sta spriteX
     jsr compareToBackground
-    
+
     lda playerY
     clc
     adc #$18
@@ -69,7 +69,7 @@ right:
     lda rightIsPressed
     beq checkCollisionDone
     lda playerY
-    clc 
+    clc
     adc #$11
     sta spriteY
     lda playerX
@@ -89,14 +89,14 @@ right:
     bvc compareToBackground
 checkCollisionDone:
     rts
-    
+
 compareToBackground:
     jsr getBGtype
-    bne cpUp
-    rts
-cpUp:
-    lda upIsPressed
-    beq cpDown
+    bne cpUp                ; If metatile type is passable then return
+    rts                     ; Else allow the movement into unpassable metatile
+cpUp:                       ; then eject the player
+    lda upIsPressed         
+    beq cpDown              
     lda playerY
     tay
     clc
@@ -155,13 +155,13 @@ compareToBackgroundDone:
     rts
 
 getBGtype:
-    lda spriteX
+    lda spriteX             ; Finds the background tile type to know if it is passable or not
     lsr A
     lsr A
     lsr A
     lsr A
     sta spriteXpos
-    
+
     lda spriteY
     and #$F0
     clc
@@ -173,7 +173,7 @@ getBGtype:
     sta collisionPtr
     lda bkgH,x
     sta collisionPtr+1
-    
+
     ldy spriteYpos
     lda (collisionPtr),y
     tax
@@ -181,9 +181,9 @@ getBGtype:
     sta BGtype
 getBGtypeDone:
     rts
-    
+
 updateSpriteCol:
-updatePlayerCol:
+updatePlayerCol:            ; Updates the players bounding box information
     lda playerY
     clc
     adc #$06
@@ -191,7 +191,7 @@ updatePlayerCol:
     clc
     adc #$10
     sta playerY1
-    
+
     lda playerX
     clc
     adc #$01
@@ -203,9 +203,9 @@ updatePlayerColDone:
     rts
 
 updateChestCol:
-    lda playerDir
-    cmp #facingUp
-    beq chestColUp
+    lda playerDir           ; Determines direction of player then loads bounding box info
+    cmp #facingUp           ; for items using chestConstants and X register to know which
+    beq chestColUp          ; item is currently being loaded
     cmp #facingDown
     beq chestColDown
     cmp #facingLeft
@@ -233,7 +233,7 @@ chestColUp:
     adc #$09
     sta chestX1
     rts
-    
+
 chestColDown:
     lda chestConstants,x
     tax
@@ -255,7 +255,7 @@ chestColDown:
     adc #$08
     sta chestX1
     rts
-    
+
 chestColLeft:
     lda chestConstants,x
     tax
@@ -277,7 +277,7 @@ chestColLeft:
     adc #$14
     sta chestX1
     rts
-    
+
 chestColRight:
     lda chestConstants,x
     tax
@@ -302,21 +302,21 @@ updateChestColDone:
     rts
 
 itemCollision:
-    lda playerX1
-    cmp chestX0
-    bcc @noHit
+   lda playerX1             ; Checks player bounding box for collision with item bounding box
+   cmp chestX0              ; If hit is detected then switch to textbox state and process
+   bcc @noHit               ; the appropriate message
 
-    lda playerY1
-    cmp chestY0
-    bcc @noHit
+   lda playerY1
+   cmp chestY0
+   bcc @noHit
 
-    lda chestX1
-    cmp playerX0
-    bcc @noHit
+   lda chestX1
+   cmp playerX0
+   bcc @noHit
 
-    lda chestY1
-    cmp playerY0
-    bcc @noHit
+   lda chestY1
+   cmp playerY0
+   bcc @noHit
 
 @hit:
     ldx #$00
@@ -330,25 +330,26 @@ itemCollision:
 
     ldx chestNo
     stx chestHdrNo
-    lda chestConstants,x
-    tax
-    inc itemRAM+1,x
-    inc itemRAM+5,x
+;    lda chestConstants,x
+;    tax
+;    inc itemRAM+1,x
+;    inc itemRAM+5,x
 
-    ldx nametable
-    ldy chestNo
-    lda itemSoftFlags,x
-    eor bitMask,y
-    sta itemSoftFlags,x
+;    ldx nametable
+;    ldy chestNo
+;    lda itemSoftFlags,x
+;    eor bitMask,y
+;    sta itemSoftFlags,x
 
     lda #$01
     sta prgNo
 @noHit:
-    rts
 itemCollisionDone:
-    
+    rts
+
+
 checkChests:
-    ldx nametable
+    ldx nametable           ; Checks each item for collision with player
     lda itemSoftFlags,x
     sta itemFlagsTemp
 

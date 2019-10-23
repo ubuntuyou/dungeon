@@ -146,14 +146,14 @@ bitMask:
 
 sprite1:
     .db $00,$06,%00000001,$00
-    .db $00,$00,%00000000,$00
-    .db $00,$00,%01000000,$00
+    .db $00,$0E,%00000000,$00
+    .db $00,$0E,%01000000,$00
     .db $00,$10,%00000000,$00
     .db $00,$10,%01000000,$00
 
 spriteAnim:
     .db $06,$01, $02,$00, $03,$00, $12,$00, $13,$00
-    .db $06,$01, $00,$00, $00,$40, $10,$00, $10,$40
+    .db $06,$01, $0E,$00, $0E,$40, $10,$00, $10,$40
     .db $06,$01, $03,$40, $02,$40, $13,$40, $12,$40
 
     .db $16,$01, $04,$00, $05,$00, $14,$00, $15,$00
@@ -175,7 +175,7 @@ animationConstants:
 palette:
     ;   BLK,WHT,LRd,DRd   BLK,DBL,LGr,DGr   BLK,WHT,LGr,DGr   BLK,DBL,RED,WHT
     .db $0F,$00,$10,$20,  $0F,$07,$06,$38,  $0F,$19,$29,$20,  $0F,$0C,$16,$30   ;;background palette
-    .db $0F,$17,$00,$10,  $0F,$17,$28,$39,  $0F,$1C,$15,$14,  $0F,$02,$38,$3C   ;;sprite palette
+    .db $0F,$17,$00,$10,  $0F,$17,$28,$39,  $0F,$20,$10,$00,  $0F,$02,$38,$3C   ;;sprite palette
 
 bkgL:
     .dl bkg00, bkg01, bkg02, bkg03, bkg04
@@ -243,7 +243,7 @@ bkg00:
    .db $01,$05,$05,$05,$01,$01,$01,$01,$01,$01,$01,$01,$05,$05,$05,$01
    .db $01,$05,$05,$05,$01,$02,$02,$01,$01,$02,$02,$01,$05,$05,$05,$02
    .db $01,$05,$05,$05,$02,$05,$05,$01,$01,$05,$05,$02,$05,$05,$05,$05
-   .db $01,$05,$05,$05,$05,$05,$05,$03,$03,$05,$05,$05,$05,$05,$05,$05
+   .db $01,$05,$05,$05,$05,$05,$05,$02,$02,$05,$05,$05,$05,$05,$05,$05
    .db $01,$05,$05,$05,$05,$05,$05,$05,$05,$05,$05,$05,$05,$05,$05,$05
    .db $01,$05,$05,$05,$05,$05,$05,$05,$05,$05,$05,$05,$05,$05,$05,$01
    .db $01,$05,$05,$05,$05,$05,$05,$05,$05,$05,$05,$05,$05,$05,$05,$01
@@ -1384,20 +1384,20 @@ textNMIindH:
     .align $100
 
 MAIN:
-    inc sleeping
+    inc sleeping        ; MAIN jumps here after one iteration. Increments sleeping so loop is active.
 loop:
-    lda sleeping
+    lda sleeping		; Do-nothing routine. NMI returns here with sleeping set to 0.
     bne loop
 
     jsr mainIndirect
 
 showCPUusageBar:
-    ldx #%00011111  ; sprites + background + monochrome (i.e. WHITE)
+    ldx #%00011111  	; sprites + background + monochrome (i.e. WHITE)
     stx $2001
-    ldy #$08  ; add about 23 for each additional line (leave it on WHITE for one scan line)
+    ldy #$08  			; add about 23 for each additional line (leave it on WHITE for one scan line)
 -   dey
     bne -
-    dex    ; sprites + background + NO monochrome  (i.e. #%00011110)
+    dex    				; sprites + background + NO monochrome  (i.e. #%00011110)
     stx $2001
 
     jmp MAIN
