@@ -24,6 +24,7 @@ collisionPtr    .dsb 2
 chestHdrTblPtr  .dsb 2
 chestHdrPtr     .dsb 2
 textBoxPtr      .dsb 2
+enemyPtr		.dsb 2
 
 gameState       .dsb 1
 softPPU_Control .dsb 1
@@ -121,6 +122,7 @@ MAP_PRG         .equ $E000
 
 spriteRAM       .equ $0204
 itemRAM         .equ $0220
+enemyRAM		.equ $0260
 itemSoftFlags   .equ $6000
 enemySoftFlags  .equ $6100
 bkgBuffer       .equ $6200
@@ -175,7 +177,7 @@ animationConstants:
 palette:
     ;   BLK,WHT,LRd,DRd   BLK,DBL,LGr,DGr   BLK,WHT,LGr,DGr   BLK,DBL,RED,WHT
     .db $0F,$00,$10,$20,  $0F,$07,$06,$38,  $0F,$19,$29,$20,  $0F,$0C,$16,$30   ;;background palette
-    .db $0F,$17,$00,$10,  $0F,$17,$28,$39,  $0F,$20,$10,$00,  $0F,$02,$38,$3C   ;;sprite palette
+    .db $0F,$17,$00,$10,  $0F,$17,$28,$39,  $0F,$20,$10,$00,  $0F,$17,$1A,$29   ;;sprite palette
 
 bkgL:
     .dl bkg00, bkg01, bkg02, bkg03, bkg04
@@ -1008,6 +1010,8 @@ loadPalettesDone:
 loadNametable:
     lda #$01
     sta needDraw
+    lda #$01
+    sta nametable
 loadNametableDone:
 
     jsr loadFlags
@@ -1142,6 +1146,8 @@ setMapperPRGdone:
 ;;;;;;;;;;;;;;;;;;;;
 
     .include "background&items.asm"
+    
+    .include "enemies.asm"
 
     .include "input.asm"
 

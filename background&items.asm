@@ -100,11 +100,17 @@ drawBkg:
     sta itemPtr
     lda itemHeadersH,x
     sta itemPtr+1
+    
+    lda enemyHeadersL,x
+    sta enemyPtr
+    lda enemyHeadersH,x
+    sta enemyPtr+1
 
     jsr metaBackground      ; Draw the background and attributes, fill textbox buffer
     jsr loadAttributes      ; Check if chests need drawn and if they have already been opened
     jsr fillPPUbuffer       ; Copy background to buffer
     jsr loadItems           ; Load chests, tablets, etc.
+    jsr loadEnemies		    ; Load enemies
 ;    jsr openChests          ; Open chests if present and flag is clear
     ldx #$00
     stx needDraw            ; Clear draw flag
@@ -121,18 +127,17 @@ loadItems:
 itemLoop:
     lda (itemPtr),y
 ;    cmp #$FE
-    beq fillLoop
+    beq @fillLoop
     sta itemRAM,y
     iny
     bvc itemLoop
 
-fillLoop:
-
+@fillLoop
     lda #$FE
     sta itemRAM,y
     iny
     cpy #$40
-    bne fillLoop
+    bne @fillLoop
 loadItemsDone:
     rts
 

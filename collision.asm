@@ -342,7 +342,7 @@ itemCollision:
 ;    sta itemSoftFlags,x
 
     lda #$01
-    sta prgNo
+    sta prgNo               ; Change prgNo for bank switch
 @noHit:
 itemCollisionDone:
     rts
