@@ -123,17 +123,17 @@ drawBkgDone:
 ;         Use system similar to loadItems to load enemies
 
 loadItems:
-    ldy #$00                ; Loads item sprites to sprite ram
+    ldy #$00                  ; Loads item sprites to sprite ram
 itemLoop:
     lda (itemPtr),y
-;    cmp #$FE
+    cmp #$FF
     beq @fillLoop
     sta itemRAM,y
     iny
     bvc itemLoop
 
 @fillLoop
-    lda #$FE
+    lda #$FF
     sta itemRAM,y
     iny
     cpy #$40
@@ -141,29 +141,29 @@ itemLoop:
 loadItemsDone:
     rts
 
-openChests:
-    lda #$00                ; Opens chests if present and corresponding flag is clear
-    sta chestNo
-    ldx nametable
-    lda itemSoftFlags,x
-    sta itemFlagsTemp
-@loop:
-    ldx chestNo
-    lda itemFlagsTemp
-    and bitMask,x
-    bne @skip
-
-    lda chestConstants,x
-    tax
-    inc itemRAM+1,x
-    inc itemRAM+5,x
-@skip
-    inc chestNo
-    lda chestNo
-    cmp #$04
-    bne @loop
-openChestsDone:
-    rts
+; openChests:
+;     lda #$00                ; Opens chests if present and corresponding flag is clear
+;     sta itemNo
+;     ldx nametable
+;     lda itemSoftFlags,x
+;     sta itemFlagsTemp
+; @loop:
+;     ldx itemNo
+;     lda itemFlagsTemp
+;     and bitMask,x
+;     bne @skip
+; 
+;     lda itemConstants,x
+;     tax
+;     inc itemRAM+1,x
+;     inc itemRAM+5,x
+; @skip
+;     inc itemNo
+;     lda itemNo
+;     cmp #$04
+;     bne @loop
+; openChestsDone:
+;     rts
 
 loadFlags:
     ldx #$00
@@ -173,6 +173,14 @@ loadFlags:
     inx
     cpx #$40
     bne @loop
+    
+    ldx #$00
+@loop2
+	lda enemyFlags,x
+	sta enemySoftFlags,x
+	inx
+	cpx #$40
+	bne @loop2
 loadFlagsDone:
     rts
 
@@ -241,94 +249,96 @@ itemFlags:
 ;chestOffset:
 ;    .db $00, $04, $08, $0C, $10, $14, $18, $1C
 
-chestConstants:
-    .db $00, $10, $20, $30, $40, $50, $60, $70
+
+; Offsets for top left positions of item metasprites
+itemConstants:
+    .db $00, $10, $20, $30
 
 itemHeader00:
-    .db $6F,$33,%00000010,$70
-    .db $6F,$33,%01000010,$78
-    .db $77,$34,%00000010,$70
-    .db $77,$34,%01000010,$78
+    .db $6F,$33,%00000000,$70
+    .db $6F,$33,%01000000,$78
+    .db $77,$34,%00000000,$70
+    .db $77,$34,%01000000,$78
 
-    .db $6F,$33,%00000010,$80
-    .db $6F,$33,%01000010,$88
-    .db $77,$34,%00000010,$80
-    .db $77,$34,%01000010,$88
+    .db $6F,$33,%00000000,$80
+    .db $6F,$33,%01000000,$88
+    .db $77,$34,%00000000,$80
+    .db $77,$34,%01000000,$88
 
-    .db $00
+    .db $FF
 
 itemHeader01:
-    .db $5F,$33,%00000010,$70
-    .db $5F,$33,%01000010,$78
-    .db $67,$34,%00000010,$70
-    .db $67,$34,%01000010,$78
-    .db $00
+    .db $5F,$33,%00000000,$70
+    .db $5F,$33,%01000000,$78
+    .db $67,$34,%00000000,$70
+    .db $67,$34,%01000000,$78
+    .db $FF
     
 itemHeader02:
 itemHeader03:
 itemHeader04:
-    .db $00
+    .db $FF
 
 itemHeader10:
-    .db $4F,$33,%00000010,$30
-    .db $4F,$33,%01000010,$38
-    .db $57,$34,%00000010,$30
-    .db $57,$34,%01000010,$38
+    .db $4F,$33,%00000000,$30
+    .db $4F,$33,%01000000,$38
+    .db $57,$34,%00000000,$30
+    .db $57,$34,%01000000,$38
 
-    .db $4F,$33,%00000010,$40
-    .db $4F,$33,%01000010,$48
-    .db $57,$34,%00000010,$40
-    .db $57,$34,%01000010,$48
+    .db $4F,$33,%00000000,$40
+    .db $4F,$33,%01000000,$48
+    .db $57,$34,%00000000,$40
+    .db $57,$34,%01000000,$48
     
-    .db $4F,$33,%00000010,$50
-    .db $4F,$33,%01000010,$58
-    .db $57,$34,%00000010,$50
-    .db $57,$34,%01000010,$58
-    .db $00
+    .db $4F,$33,%00000000,$50
+    .db $4F,$33,%01000000,$58
+    .db $57,$34,%00000000,$50
+    .db $57,$34,%01000000,$58
+    .db $FF
 
 itemHeader11:
-    .db $00
+    .db $FF
 
 itemHeader12:
-    .db $7F,$33,%00000010,$30
-    .db $7F,$33,%01000010,$38
-    .db $87,$34,%00000010,$30
-    .db $87,$34,%01000010,$38
+    .db $7F,$33,%00000000,$30
+    .db $7F,$33,%01000000,$38
+    .db $87,$34,%00000000,$30
+    .db $87,$34,%01000000,$38
 
-    .db $9F,$33,%00000010,$A0
-    .db $9F,$33,%01000010,$A8
-    .db $A7,$34,%00000010,$A0
-    .db $A7,$34,%01000010,$A8
-    .db $00
+    .db $9F,$33,%00000000,$A0
+    .db $9F,$33,%01000000,$A8
+    .db $A7,$34,%00000000,$A0
+    .db $A7,$34,%01000000,$A8
+    .db $FF
 
 itemHeader13:
-    .db $00
+    .db $FF
 
 itemHeader20:
-    .db $00
+    .db $FF
 
 itemHeader21:
-    .db $9F,$33,%00000010,$A0
-    .db $9F,$33,%01000010,$A8
-    .db $A7,$34,%00000010,$A0
-    .db $A7,$34,%01000010,$A8
-    .db $00
+    .db $9F,$33,%00000000,$A0
+    .db $9F,$33,%01000000,$A8
+    .db $A7,$34,%00000000,$A0
+    .db $A7,$34,%01000000,$A8
+    .db $FF
 
 itemHeader22:
-    .db $00
+    .db $FF
 
 itemHeader23:
-    .db $00
+    .db $FF
 
 itemHeader30:
-    .db $00
+    .db $FF
 itemHeader31:
-    .db $00
+    .db $FF
 itemHeader32:
-    .db $00
+    .db $FF
 itemHeader33:
-    .db $9F,$33,%00000010,$A0
-    .db $9F,$33,%01000010,$A8
-    .db $A7,$34,%00000010,$A0
-    .db $A7,$34,%01000010,$A8
-    .db $00
+    .db $9F,$33,%00000000,$A0
+    .db $9F,$33,%01000000,$A8
+    .db $A7,$34,%00000000,$A0
+    .db $A7,$34,%01000000,$A8
+    .db $FF

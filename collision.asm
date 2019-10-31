@@ -20,7 +20,7 @@ up:
     clc
     adc #$09
     sta spriteX
-    bvc compareToBackground
+    jmp compareToBackground
 down:
     lda downIsPressed
     beq left
@@ -42,7 +42,7 @@ down:
     clc
     adc #$09
     sta spriteX
-    bvc compareToBackground
+    jmp compareToBackground
 left:
     lda leftIsPressed
     beq right
@@ -64,7 +64,7 @@ left:
     sec
     sbc #$03
     sta spriteX
-    bvc compareToBackground
+    jmp compareToBackground
 right:
     lda rightIsPressed
     beq checkCollisionDone
@@ -86,7 +86,7 @@ right:
     clc
     adc #$0A
     sta spriteX
-    bvc compareToBackground
+    jmp compareToBackground
 checkCollisionDone:
     rts
 
@@ -166,7 +166,8 @@ getBGtype:
     and #$F0
     clc
     adc spriteXpos
-    sta spriteYpos
+;    sta spriteYpos
+	tay
 
     ldx nametable
     lda bkgL,x
@@ -174,7 +175,7 @@ getBGtype:
     lda bkgH,x
     sta collisionPtr+1
 
-    ldy spriteYpos
+;    ldy spriteYpos
     lda (collisionPtr),y
     tax
     lda metaAtb,x
@@ -182,7 +183,29 @@ getBGtype:
 getBGtypeDone:
     rts
 
-updateSpriteCol:
+updateEnemyCol:
+    lda enemyConstants,x
+    tax
+    lda enemyRAM,x
+;    clc
+;    adc #$08
+    sta enemyY0
+;    lda enemyRAM+4,x
+    clc
+    adc #$08
+    sta enemyY1
+
+    lda enemyRAM+3,x
+    clc
+    adc #$02
+    sta enemyX0
+;    lda enemyRAM+3,x
+    clc
+    adc #$0F
+    sta enemyX1
+updateEnemyColDone:
+	rts
+
 updatePlayerCol:            ; Updates the players bounding box information
     lda playerY
     clc
@@ -201,120 +224,121 @@ updatePlayerCol:            ; Updates the players bounding box information
     sta playerX1
 updatePlayerColDone:
     rts
+    
 
-updateChestCol:
-    lda playerDir           ; Determines direction of player then loads bounding box info
-    cmp #facingUp           ; for items using chestConstants and X register to know which
-    beq chestColUp          ; item is currently being loaded
-    cmp #facingDown
-    beq chestColDown
-    cmp #facingLeft
-    beq chestColLeft
-    bvc chestColRight
+updateItemCol:
+;     lda playerDir           ; Determines direction of player then loads bounding box info
+;     cmp #facingUp           ; for items using chestConstants and X register to know which
+;     beq itemColUp           ; item is currently being loaded
+;     cmp #facingDown
+;     beq itemColDown
+;     cmp #facingLeft
+;     beq itemColLeft
+;     bvc itemColRight
 
-chestColUp:
-    lda chestConstants,x
+; itemColUp:
+    lda itemConstants,x
     tax
     lda itemRAM,x
     clc
     adc #$08
-    sta chestY0
+    sta itemY0
     lda itemRAM+4,x
     clc
     adc #$08
-    sta chestY1
+    sta itemY1
 
     lda itemRAM+3,x
     clc
     adc #$09
-    sta chestX0
+    sta itemX0
     lda itemRAM+3,x
     clc
     adc #$09
-    sta chestX1
+    sta itemX1
     rts
 
-chestColDown:
-    lda chestConstants,x
-    tax
-    lda itemRAM,x
-    sec
-    sbc #$02
-    sta chestY0
-    lda itemRAM+4,x
-    sec
-    sbc #$02
-    sta chestY1
-
-    lda itemRAM+3,x
-    clc
-    adc #$08
-    sta chestX0
-    lda itemRAM+3,x
-    clc
-    adc #$08
-    sta chestX1
-    rts
-
-chestColLeft:
-    lda chestConstants,x
-    tax
-    lda itemRAM,x
-    clc
-    adc #$08
-    sta chestY0
-    lda itemRAM+4,x
-    clc
-    adc #$09
-    sta chestY1
-
-    lda itemRAM+3,x
-    clc
-    adc #$14
-    sta chestX0
-    lda itemRAM+3,x
-    clc
-    adc #$14
-    sta chestX1
-    rts
-
-chestColRight:
-    lda chestConstants,x
-    tax
-    lda itemRAM,x
-    clc
-    adc #$08
-    sta chestY0
-    lda itemRAM+4,x
-    clc
-    adc #$09
-    sta chestY1
-
-    lda itemRAM+3,x
-    sec
-    sbc #$03
-    sta chestX0
-    lda itemRAM+3,x
-    sec
-    sbc #$03
-    sta chestX1
-updateChestColDone:
+; itemColDown:
+;     lda itemConstants,x
+;     tax
+;     lda itemRAM,x
+;     sec
+;     sbc #$02
+;     sta itemY0
+;     lda itemRAM+4,x
+;     sec
+;     sbc #$02
+;     sta itemY1
+; 
+;     lda itemRAM+3,x
+;     clc
+;     adc #$08
+;     sta itemX0
+;     lda itemRAM+3,x
+;     clc
+;     adc #$08
+;     sta itemX1
+;     rts
+; 
+; itemColLeft:
+;     lda itemConstants,x
+;     tax
+;     lda itemRAM,x
+;     clc
+;     adc #$08
+;     sta itemY0
+;     lda itemRAM+4,x
+;     clc
+;     adc #$09
+;     sta itemY1
+; 
+;     lda itemRAM+3,x
+;     clc
+;     adc #$14
+;     sta itemX0
+;     lda itemRAM+3,x
+;     clc
+;     adc #$14
+;     sta itemX1
+;     rts
+; 
+; itemColRight:
+;     lda itemConstants,x
+;     tax
+;     lda itemRAM,x
+;     clc
+;     adc #$08
+;     sta itemY0
+;     lda itemRAM+4,x
+;     clc
+;     adc #$09
+;     sta itemY1
+; 
+;     lda itemRAM+3,x
+;     sec
+;     sbc #$03
+;     sta itemX0
+;     lda itemRAM+3,x
+;     sec
+;     sbc #$03
+;     sta itemX1
+updateItemColDone:
     rts
 
 itemCollision:
    lda playerX1             ; Checks player bounding box for collision with item bounding box
-   cmp chestX0              ; If hit is detected then switch to textbox state and process
+   cmp itemX0               ; If hit is detected then switch to textbox state and process
    bcc @noHit               ; the appropriate message
 
    lda playerY1
-   cmp chestY0
+   cmp itemY0
    bcc @noHit
 
-   lda chestX1
+   lda itemX1
    cmp playerX0
    bcc @noHit
 
-   lda chestY1
+   lda itemY1
    cmp playerY0
    bcc @noHit
 
@@ -328,15 +352,15 @@ itemCollision:
     inx
     stx gameState
 
-    ldx chestNo
-    stx chestHdrNo
-;    lda chestConstants,x
+    ldx itemNo
+    stx itemHdrNo
+;    lda itemConstants,x
 ;    tax
 ;    inc itemRAM+1,x
 ;    inc itemRAM+5,x
 
 ;    ldx nametable
-;    ldy chestNo
+;    ldy itemNo
 ;    lda itemSoftFlags,x
 ;    eor bitMask,y
 ;    sta itemSoftFlags,x
@@ -347,25 +371,76 @@ itemCollision:
 itemCollisionDone:
     rts
 
+enemyCollision:
+   lda playerX1             ; Checks player bounding box for collision with item bounding box
+   cmp enemyX0              ; If hit is detected then switch to textbox state and process
+   bcc @noHit               ; the appropriate message
 
-checkChests:
+   lda playerY1
+   cmp enemyY0
+   bcc @noHit
+
+   lda enemyX1
+   cmp playerX0
+   bcc @noHit
+
+   lda enemyY1
+   cmp playerY0
+   bcc @noHit
+
+@hit:
+    lda playerX
+    sec
+    sbc #$10
+    sta playerX
+
+@noHit:
+enemyCollisionDone:
+    rts
+
+
+checkItems:
     ldx nametable           ; Checks each item for collision with player
     lda itemSoftFlags,x
     sta itemFlagsTemp
 
 @loop:
-    ldx chestNo
+    ldx itemNo
     lda itemFlagsTemp
     and bitMask,x
     beq @skip
 
-    jsr updateChestCol
+    jsr updateItemCol
     jsr itemCollision
 
 @skip:
-    inc chestNo
-    lda chestNo
+    inc itemNo
+    lda itemNo
     cmp #$08
     bne @loop
-checkChestsDone:
+checkItemsDone:
+    rts
+
+checkEnemies:
+    ldx nametable           ; Checks each enemy for collision with player
+    lda enemySoftFlags,x
+    sta enemyFlagsTemp
+    lda #$00
+    sta enemyNo
+
+@loop:
+    ldx enemyNo
+    lda enemyFlagsTemp
+    and bitMask,x
+    beq @skip
+
+    jsr updateEnemyCol
+    jsr enemyCollision
+
+@skip:
+    inc enemyNo
+    lda enemyNo
+    cmp #$08
+    bne @loop
+checkEnemiesDone:
     rts

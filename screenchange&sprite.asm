@@ -21,8 +21,8 @@ attributePtr    .dsb 2
 itemPtr         .dsb 2
 animationPtr    .dsb 2
 collisionPtr    .dsb 2
-chestHdrTblPtr  .dsb 2
-chestHdrPtr     .dsb 2
+itemHdrTblPtr   .dsb 2
+itemHdrPtr      .dsb 2
 textBoxPtr      .dsb 2
 enemyPtr		.dsb 2
 
@@ -67,14 +67,26 @@ spriteX         .dsb 1
 spriteY         .dsb 1
 spriteXpos      .dsb 1
 spriteYpos      .dsb 1
-chestY0         .dsb 1
-chestY1         .dsb 1
-chestX0         .dsb 1
-chestX1         .dsb 1
+
+itemY0          .dsb 1
+itemY1          .dsb 1
+itemX0          .dsb 1
+itemX1          .dsb 1
+
+enemyX			.dsb 4
+enemyY			.dsb 4
+enemyY0			.dsb 1
+enemyY1			.dsb 1
+enemyX0			.dsb 1
+enemyX1			.dsb 1
+enemySpeed		.dsb 3
+enemyNo			.dsb 1
+
 messageNo		.dsb 1
-chestNo         .dsb 1
-chestHdrNo      .dsb 1
-chestStrAddr    .dsb 1
+itemNo          .dsb 1
+itemHdrNo       .dsb 1
+itemStrAddr     .dsb 1
+
 BGtype          .dsb 1
 
 itemFlagsTemp   .dsb 1
@@ -262,7 +274,7 @@ bkg01:
     .db $01,$05,$05,$05,$05,$05,$01,$05,$05,$05,$05,$05,$01,$01,$01,$01
     .db $01,$05,$05,$05,$05,$05,$01,$05,$05,$05,$05,$05,$01,$01,$01,$01
     .db $02,$05,$05,$05,$05,$05,$01,$05,$05,$01,$05,$05,$01,$02,$02,$02
-    .db $05,$05,$05,$05,$05,$05,$01,$03,$05,$01,$05,$05,$01,$05,$05,$05
+    .db $05,$05,$05,$05,$05,$05,$01,$08,$05,$01,$05,$05,$01,$05,$05,$05
     .db $05,$05,$05,$05,$05,$05,$01,$05,$05,$01,$05,$05,$01,$05,$05,$05
     .db $05,$05,$05,$05,$05,$05,$01,$05,$05,$01,$05,$05,$01,$05,$05,$05
     .db $01,$05,$05,$05,$05,$05,$01,$05,$05,$01,$05,$05,$01,$05,$05,$01
@@ -509,7 +521,7 @@ bkg31:
     .db $01,$04,$04,$04,$04,$04,$04,$04,$04,$04,$04,$04,$04,$04,$04,$01
     .db $02,$04,$04,$04,$04,$05,$04,$04,$04,$04,$05,$04,$04,$04,$04,$02
     .db $05,$04,$04,$04,$04,$04,$04,$04,$04,$04,$04,$04,$04,$04,$04,$05
-    .db $05,$04,$04,$04,$04,$04,$05,$00,$00,$05,$04,$04,$04,$04,$04,$05
+    .db $05,$04,$04,$04,$04,$04,$05,$00,$05,$05,$04,$04,$04,$04,$04,$05
     .db $05,$04,$04,$04,$04,$04,$05,$00,$00,$05,$04,$04,$04,$04,$04,$05
     .db $01,$04,$04,$04,$04,$04,$04,$04,$04,$04,$04,$04,$04,$04,$04,$01
     .db $01,$04,$04,$04,$04,$05,$04,$04,$04,$04,$05,$04,$04,$04,$04,$01
@@ -1010,7 +1022,7 @@ loadPalettesDone:
 loadNametable:
     lda #$01
     sta needDraw
-    lda #$01
+    lda #$00
     sta nametable
 loadNametableDone:
 
@@ -1049,7 +1061,8 @@ loadNametableDone:
     
     lda #$00
     jsr setMapperPRG
-    
+    sta enemySpeed
+
     lda #$01
     sta playerSpeed
 
@@ -1189,7 +1202,9 @@ playingMAIN:
     sta playerDirOld
 
     jsr updateSpriteLoc
+    jsr updateEnemyLoc
     jsr updatePlayerCol
+    jsr checkEnemies
 
 readInput:
     jsr readRight
@@ -1206,6 +1221,8 @@ processInput:
     jsr moveDown
     jsr moveUp
 processInputDone:
+
+	jsr enemyLogic
 
     jsr updateFrames
 playingMAINdone:
