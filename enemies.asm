@@ -9,14 +9,14 @@ enemyLoop:
     cpy #$20
     bne enemyLoop
 
-@fillLoop
+@fillLoop                   ; Clear unused enemyRAM
     lda #$FE
     sta enemyRAM,y
     iny
     cpy #$40
     bne @fillLoop
 
-    lda enemyRAM+0
+    lda enemyRAM+0          ; Populate enemy X and Y variables for collision
     sta enemyY+0
     lda enemyRAM+8
     sta enemyY+1
@@ -121,12 +121,13 @@ enemyHeader00:
     .db $00
 
 enemyHeader01:
-    .db $5F,$35,%00000011,$30
-    .db $5F,$35,%01000011,$38
+    ;    Y, Tile No,  rotation & palette,  X
+    .db $5F,  $35,       %00000011,       $30  ; Enemy1 sprite 1
+    .db $5F,  $35,       %01000011,       $38  ; Enemy1 sprite 2
 
-    .db $67,$35,%00000011,$48
-    .db $67,$35,%01000011,$50
-    .db $00
+    .db $67,  $35,       %00000011,       $48  ; Enemy2 sprite 1
+    .db $67,  $35,       %01000011,       $50  ; Enemy2 sprite 2
+    .db $00                                    ; No more enemy data for this room
     
 enemyHeader02:
 enemyHeader03:
