@@ -1,9 +1,9 @@
 checkCollision:
 up:
     lda upIsPressed         ; Checks player's hotspots for collision with background.
-    beq down                ; Called in the movement routines.
-    lda playerY             ; Adds/subtracts a specific amount to playerX/Y.
-    clc                     ; So that instead of basing collision off of the player's top left corner
+    beq down                ; Called in the moveUp, moveDown, moveLeft, moveRight routines.
+    lda playerY             ; Adds/subtracts a specific amount to playerX/Y
+    clc                     ;  so that instead of basing collision off of the player's top left corner
     adc #$10                ;  it can check various points around the sprite similar to a bounding box.
     sta spriteY
     lda playerX
@@ -94,13 +94,11 @@ compareToBackground:
     jsr getBGtype           ; Get current background metatile attribute byte for (spriteY & #$F0) + (spriteX / 16)
     bne cpUp                ; If metatile type is passable then return
     rts                     ; Else allow the movement into unpassable metatile
-cpUp:                       ; then eject the player
+cpUp:                       ;  then eject the player
     lda upIsPressed
     beq cpDown
     lda playerY
     tay
-    clc
-    adc #$10
     and #$0F
     eor #$0F
     sta temp
@@ -115,7 +113,7 @@ cpDown:
     lda playerY
     tay
     clc
-    adc #$19
+    adc #$09
     and #$0F
     sta temp
     tya
@@ -189,20 +187,20 @@ updateEnemyCol:             ; Updates the enemy bounding boxes for sprite on spr
     lda enemyRAM,x
 ;    clc
 ;    adc #$08
-    sta enemyY0
+    sta enemy_TOP
 ;    lda enemyRAM+4,x
     clc
     adc #$08
-    sta enemyY1
+    sta enemy_BOTTOM
 
     lda enemyRAM+3,x
     clc
     adc #$02
-    sta enemyX0
+    sta enemy_LEFT
 ;    lda enemyRAM+3,x
     clc
     adc #$0F
-    sta enemyX1
+    sta enemy_RIGHT
 updateEnemyColDone:
 	rts
 
@@ -210,18 +208,18 @@ updatePlayerCol:            ; Updates the players bounding box for sprite on spr
     lda playerY
     clc
     adc #$06
-    sta playerY0
+    sta player_TOP
     clc
     adc #$10
-    sta playerY1
+    sta player_BOTTOM
 
     lda playerX
     clc
     adc #$01
-    sta playerX0
+    sta player_LEFT
     clc
     adc #$07
-    sta playerX1
+    sta player_RIGHT
 updatePlayerColDone:
     rts
 
@@ -242,20 +240,20 @@ updateItemCol:
     lda itemRAM,x
     clc
     adc #$08
-    sta itemY0
+    sta item_TOP
     lda itemRAM+4,x
     clc
     adc #$08
-    sta itemY1
+    sta item_BOTTOM
 
     lda itemRAM+3,x
     clc
     adc #$09
-    sta itemX0
+    sta item_LEFT
     lda itemRAM+3,x
     clc
     adc #$09
-    sta itemX1
+    sta item_RIGHT
     rts
 
 ; itemColDown:
@@ -269,7 +267,7 @@ updateItemCol:
 ;     sec
 ;     sbc #$02
 ;     sta itemY1
-; 
+;
 ;     lda itemRAM+3,x
 ;     clc
 ;     adc #$08
@@ -279,7 +277,7 @@ updateItemCol:
 ;     adc #$08
 ;     sta itemX1
 ;     rts
-; 
+;
 ; itemColLeft:
 ;     lda itemConstants,x
 ;     tax
@@ -291,7 +289,7 @@ updateItemCol:
 ;     clc
 ;     adc #$09
 ;     sta itemY1
-; 
+;
 ;     lda itemRAM+3,x
 ;     clc
 ;     adc #$14
@@ -301,7 +299,7 @@ updateItemCol:
 ;     adc #$14
 ;     sta itemX1
 ;     rts
-; 
+;
 ; itemColRight:
 ;     lda itemConstants,x
 ;     tax
@@ -313,7 +311,7 @@ updateItemCol:
 ;     clc
 ;     adc #$09
 ;     sta itemY1
-; 
+;
 ;     lda itemRAM+3,x
 ;     sec
 ;     sbc #$03
@@ -326,20 +324,20 @@ updateItemColDone:
     rts
 
 itemCollision:
-   lda playerX1             ; Checks player bounding box for collision with item bounding box
-   cmp itemX0               ; If hit is detected then switch to textbox state and process
+   lda player_RIGHT         ; Checks player bounding box for collision with item bounding box
+   cmp item_LEFT            ; If hit is detected then switch to textbox state and process
    bcc @noHit               ; the appropriate message
 
-   lda playerY1
-   cmp itemY0
+   lda player_BOTTOM
+   cmp item_TOP
    bcc @noHit
 
-   lda itemX1
-   cmp playerX0
+   lda item_RIGHT
+   cmp player_LEFT
    bcc @noHit
 
-   lda itemY1
-   cmp playerY0
+   lda item_BOTTOM
+   cmp player_TOP
    bcc @noHit
 
 @hit:
@@ -372,20 +370,20 @@ itemCollisionDone:
     rts
 
 enemyCollision:
-   lda playerX1             ; Checks player bounding box for collision with item bounding box
-   cmp enemyX0              ; If hit is detected then switch to textbox state and process
+   lda player_RIGHT         ; Checks player bounding box for collision with item bounding box
+   cmp enemy_LEFT           ; If hit is detected then switch to textbox state and process
    bcc @noHit               ; the appropriate message
 
-   lda playerY1
-   cmp enemyY0
+   lda player_BOTTOM
+   cmp enemy_TOP
    bcc @noHit
 
-   lda enemyX1
-   cmp playerX0
+   lda enemy_RIGHT
+   cmp player_LEFT
    bcc @noHit
 
-   lda enemyY1
-   cmp playerY0
+   lda enemy_BOTTOM
+   cmp player_TOP
    bcc @noHit
 
 @hit:

@@ -119,7 +119,7 @@ lookupMessage:
     asl
     tay
     lda itemHeaderTbls,y
-    sta itemHdrTblPtr     ; Use nametable to find which table of
+    sta itemHdrTblPtr      ; Use nametable to find which table of
     iny                    ;  item headers to read from.
     lda itemHeaderTbls,y
     sta itemHdrTblPtr+1
@@ -128,7 +128,7 @@ lookupMessage:
     asl
     tay
     lda (itemHdrTblPtr),y
-    sta itemHdrPtr        ; Then use that offset to index into the
+    sta itemHdrPtr         ; Then use that offset to index into the
     iny                    ;  message table for that room.
     lda (itemHdrTblPtr),y
     sta itemHdrPtr+1

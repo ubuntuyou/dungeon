@@ -59,26 +59,25 @@ playerDirOld    .dsb 1
 playerSpeed     .dsb 2
 playerX         .dsb 1
 playerY         .dsb 1
-playerY0        .dsb 1
-playerY1        .dsb 1
-playerX0        .dsb 1
-playerX1        .dsb 1
+player_TOP      .dsb 1
+player_BOTTOM   .dsb 1
+player_LEFT     .dsb 1
+player_RIGHT    .dsb 1
 spriteX         .dsb 1
 spriteY         .dsb 1
 spriteXpos      .dsb 1
-;spriteYpos      .dsb 1
 
-itemY0          .dsb 1
-itemY1          .dsb 1
-itemX0          .dsb 1
-itemX1          .dsb 1
+item_TOP        .dsb 1
+item_BOTTOM     .dsb 1
+item_LEFT       .dsb 1
+item_RIGHT      .dsb 1
 
 enemyX			.dsb 4
 enemyY			.dsb 4
-enemyY0			.dsb 1
-enemyY1			.dsb 1
-enemyX0			.dsb 1
-enemyX1			.dsb 1
+enemy_TOP		.dsb 1
+enemy_BOTTOM	.dsb 1
+enemy_LEFT  	.dsb 1
+enemy_RIGHT		.dsb 1
 enemySpeed		.dsb 3
 enemyNo			.dsb 1
 

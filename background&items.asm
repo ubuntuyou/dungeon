@@ -132,7 +132,7 @@ itemLoop:
     iny
     bvc itemLoop
 
-@fillLoop
+@fillLoop                     ; Blanks out unused itemRAM
     lda #$FF
     sta itemRAM,y
     iny
@@ -165,15 +165,15 @@ loadItemsDone:
 ; openChestsDone:
 ;     rts
 
-loadFlags:
-    ldx #$00
+loadFlags:                  ; Loads itemFlags to RAM so they can be read and modified
+    ldx #$00                ;  such as for checking if chests should be open or closed
 @loop:
     lda itemFlags,x
     sta itemSoftFlags,x
     inx
     cpx #$40
     bne @loop
-    
+
     ldx #$00
 @loop2
 	lda enemyFlags,x
