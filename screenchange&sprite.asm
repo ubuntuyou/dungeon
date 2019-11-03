@@ -66,7 +66,7 @@ playerX1        .dsb 1
 spriteX         .dsb 1
 spriteY         .dsb 1
 spriteXpos      .dsb 1
-spriteYpos      .dsb 1
+;spriteYpos      .dsb 1
 
 itemY0          .dsb 1
 itemY1          .dsb 1
@@ -127,6 +127,7 @@ PPU_Scroll      .equ $2005
 PPU_Address     .equ $2006
 PPU_Data        .equ $2007
 
+MAP_
 MAP_Control     .equ $8000
 MAP_CHR0        .equ $A000
 MAP_CHR1        .equ $C000

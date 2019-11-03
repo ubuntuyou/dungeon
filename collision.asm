@@ -1,10 +1,10 @@
 checkCollision:
 up:
-    lda upIsPressed         ; Checks player's hotspots for collision with background
-    beq down
-    lda playerY
-    clc
-    adc #$10
+    lda upIsPressed         ; Checks player's hotspots for collision with background.
+    beq down                ; Called in the movement routines.
+    lda playerY             ; Adds/subtracts a specific amount to playerX/Y.
+    clc                     ; So that instead of basing collision off of the player's top left corner
+    adc #$10                ;  it can check various points around the sprite similar to a bounding box.
     sta spriteY
     lda playerX
     sec
@@ -91,12 +91,12 @@ checkCollisionDone:
     rts
 
 compareToBackground:
-    jsr getBGtype
+    jsr getBGtype           ; Get current background metatile attribute byte for (spriteY & #$F0) + (spriteX / 16)
     bne cpUp                ; If metatile type is passable then return
     rts                     ; Else allow the movement into unpassable metatile
 cpUp:                       ; then eject the player
-    lda upIsPressed         
-    beq cpDown              
+    lda upIsPressed
+    beq cpDown
     lda playerY
     tay
     clc
@@ -155,35 +155,35 @@ compareToBackgroundDone:
     rts
 
 getBGtype:
-    lda spriteX             ; Finds the background tile type to know if it is passable or not
+    lda spriteX             ; Divides spriteX by 16 so that it corresponds to metatile columns
     lsr A
     lsr A
     lsr A
     lsr A
     sta spriteXpos
 
-    lda spriteY
+    lda spriteY             ; Then add high nybble of spriteY to correspond to metatile rows
     and #$F0
     clc
     adc spriteXpos
 ;    sta spriteYpos
 	tay
 
-    ldx nametable
+    ldx nametable           ; Load pointers to get correct background
     lda bkgL,x
     sta collisionPtr
     lda bkgH,x
     sta collisionPtr+1
 
 ;    ldy spriteYpos
-    lda (collisionPtr),y
+    lda (collisionPtr),y    ; Look up the metatile
     tax
-    lda metaAtb,x
-    sta BGtype
+    lda metaAtb,x           ; And use it to look up the metatile attribute
+    sta BGtype              ; Store in BGtype for further use
 getBGtypeDone:
     rts
 
-updateEnemyCol:
+updateEnemyCol:             ; Updates the enemy bounding boxes for sprite on sprite collision
     lda enemyConstants,x
     tax
     lda enemyRAM,x
@@ -206,7 +206,7 @@ updateEnemyCol:
 updateEnemyColDone:
 	rts
 
-updatePlayerCol:            ; Updates the players bounding box information
+updatePlayerCol:            ; Updates the players bounding box for sprite on sprite collision
     lda playerY
     clc
     adc #$06
@@ -224,7 +224,7 @@ updatePlayerCol:            ; Updates the players bounding box information
     sta playerX1
 updatePlayerColDone:
     rts
-    
+
 
 updateItemCol:
 ;     lda playerDir           ; Determines direction of player then loads bounding box info
