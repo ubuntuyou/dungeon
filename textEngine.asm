@@ -118,20 +118,20 @@ lookupMessage:
     lda nametable
     asl
     tay
-    lda chestHeaderTbls,y
-    sta chestHdrTblPtr     ; Use nametable to find which table of
-    iny                    ;  chest headers to read from.
-    lda chestHeaderTbls,y
-    sta chestHdrTblPtr+1
+    lda itemHeaderTbls,y
+    sta itemHdrTblPtr      ; Use nametable to find which table of
+    iny                    ;  item headers to read from.
+    lda itemHeaderTbls,y
+    sta itemHdrTblPtr+1
 
-    lda chestHdrNo
+    lda itemHdrNo
     asl
     tay
-    lda (chestHdrTblPtr),y
-    sta chestHdrPtr        ; Then use that offset to index into the
+    lda (itemHdrTblPtr),y
+    sta itemHdrPtr         ; Then use that offset to index into the
     iny                    ;  message table for that room.
-    lda (chestHdrTblPtr),y
-    sta chestHdrPtr+1
+    lda (itemHdrTblPtr),y
+    sta itemHdrPtr+1
 
     ldx lineNo
     lda textLine,x
@@ -141,7 +141,7 @@ lookupMessage:
 
     ldy #$00
 @loop:
-    lda (chestHdrPtr),y
+    lda (itemHdrPtr),y
     sta textBuffer,y       ; Store message in textBuffer
     beq lookupMessageDone
     iny
@@ -216,84 +216,84 @@ line6:
 textLine:
     .db $41, $61, $81, $A1, $C1
 
-chestHeaderTbls:
-    .dw chestHdrTbl_00, chestHdrTbl_01, chestHdrTbl_02, chestHdrTbl_03
+itemHeaderTbls:
+    .dw itemHdrTbl_00, itemHdrTbl_01, itemHdrTbl_02, itemHdrTbl_03
     .dsw $0C,$FFFF
-    .dw chestHdrTbl_10, chestHdrTbl_11, chestHdrTbl_12, chestHdrTbl_13
+    .dw itemHdrTbl_10, itemHdrTbl_11, itemHdrTbl_12, itemHdrTbl_13
     .dsw $0C,$FFFF
-    .dw chestHdrTbl_20, chestHdrTbl_21, chestHdrTbl_22, chestHdrTbl_23
+    .dw itemHdrTbl_20, itemHdrTbl_21, itemHdrTbl_22, itemHdrTbl_23
     .dsw $0C,$FFFF
-    .dw chestHdrTbl_30, chestHdrTbl_31, chestHdrTbl_32, chestHdrTbl_33
+    .dw itemHdrTbl_30, itemHdrTbl_31, itemHdrTbl_32, itemHdrTbl_33
     .dsw $0C,$FFFF
 
-chestHdrTbl_00:
-    .dw chestHdr_00_0, chestHdr_00_1
-chestHdrTbl_01:
-    .dw chestHdr_01_0
-chestHdrTbl_02:
-chestHdrTbl_03:
+itemHdrTbl_00:
+    .dw itemHdr_00_0, itemHdr_00_1
+itemHdrTbl_01:
+    .dw itemHdr_01_0
+itemHdrTbl_02:
+itemHdrTbl_03:
 
-chestHdrTbl_10:
-    .dw chestHdr_10_0, chestHdr_10_1, chestHdr_10_2
-chestHdrTbl_11:
-chestHdrTbl_12:
-    .dw chestHdr_12_0, chestHdr_12_1
-chestHdrTbl_13:
+itemHdrTbl_10:
+    .dw itemHdr_10_0, itemHdr_10_1, itemHdr_10_2
+itemHdrTbl_11:
+itemHdrTbl_12:
+    .dw itemHdr_12_0, itemHdr_12_1
+itemHdrTbl_13:
 
-chestHdrTbl_20:
-chestHdrTbl_21:
-    .dw chestHdr_21_0
-chestHdrTbl_22:
-chestHdrTbl_23:
+itemHdrTbl_20:
+itemHdrTbl_21:
+    .dw itemHdr_21_0
+itemHdrTbl_22:
+itemHdrTbl_23:
 
-chestHdrTbl_30:
-chestHdrTbl_31:
-chestHdrTbl_32:
-chestHdrTbl_33:
-    .dw chestHdr_33_0
+itemHdrTbl_30:
+itemHdrTbl_31:
+itemHdrTbl_32:
+itemHdrTbl_33:
+    .dw itemHdr_33_0
 
-chestHdr_00_0:
+itemHdr_00_0:
     .db "MEADOW LARK OF FEATHER DARK"
     .db newLine          ; A new line
     .db "TOOK WING ON A SUMMER GLOOM",0
-chestHdr_00_1:
+itemHdr_00_1:
     .db "DUSKEN SAIL FROM TIP TO TAIL"
     .db newLine
     .db "SAVE A SINGLE SILVER PLUME",0
 
-chestHdr_01_0:
-    .db "THIS CHEST HAS INTENTIONALLY"
+itemHdr_01_0:
+    .db "THIS TABLET HAS INTENTIONALLY"
     .db newLine
     .db "BEEN LEFT BLANK",$5B,0
 
-chestHdr_10_0:
+itemHdr_10_0:
     .db "OVER GLEN AND MOOR SHE",$5E,"D SOAR"
     .db newLine
     .db "ACROSS THE EM",$5E,"RALD LAND",0
-chestHdr_10_1:
+itemHdr_10_1:
     .db "SEEKING NIGH WITH EVERY HIE"
     .db newLine
     .db "TO LIGHT ON LOVE",$5E,"S SURE HAND",0
-chestHdr_10_2:
+itemHdr_10_2:
     .db "BUT DANGERS LOOM IN UNDERDOOM"
     .db newLine
     .db "TO STEAL THE MORNING LIGHT",0
 
-chestHdr_12_0:
+itemHdr_12_0:
     .db "TO SNATCH AWAY THE GOLDEN RAY"
     .db newLine
     .db "THE LARK WHO SINGS AT NIGHT",0
-chestHdr_12_1:
+itemHdr_12_1:
     .db "MEET THE CALL OF FEATHERFALL"
     .db newLine
     .db "PREPARE THY WARRIOR",$5E,"S STEEL",0
 
-chestHdr_21_0:
+itemHdr_21_0:
     .db "BE THE BANE TO BRING THE REIGN"
     .db newLine
     .db "OF AN EVIL DOG TO HEEL",0
 
-chestHdr_33_0:
+itemHdr_33_0:
     .db "HEED THE CALL",$5D," FOR HERO",$5D," ALL"
     .db newLine
     .db "IS HANGING ON THE CUSP",$5B,$5B,$5B,0
