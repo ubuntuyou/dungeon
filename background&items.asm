@@ -110,8 +110,9 @@ drawBkg:
     jsr loadAttributes      ; Check if chests need drawn and if they have already been opened
     jsr fillPPUbuffer       ; Copy background to buffer
     jsr loadItems           ; Load chests, tablets, etc.
-    jsr loadEnemies		    ; Load enemies
+;    jsr loadEnemies		 ; Load enemies
 ;    jsr openChests          ; Open chests if present and flag is clear
+	jsr enemyLoad
     ldx #$00
     stx needDraw            ; Clear draw flag
     inx

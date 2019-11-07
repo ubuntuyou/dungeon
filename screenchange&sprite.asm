@@ -25,6 +25,7 @@ itemHdrTblPtr   .dsb 2
 itemHdrPtr      .dsb 2
 textBoxPtr      .dsb 2
 enemyPtr		.dsb 2
+enemyDefPtr		.dsb 2
 
 gameState       .dsb 1
 softPPU_Control .dsb 1
@@ -72,14 +73,16 @@ item_BOTTOM     .dsb 1
 item_LEFT       .dsb 1
 item_RIGHT      .dsb 1
 
-enemyX			.dsb 4
 enemyY			.dsb 4
+enemyX			.dsb 4
 enemy_TOP		.dsb 1
 enemy_BOTTOM	.dsb 1
 enemy_LEFT  	.dsb 1
 enemy_RIGHT		.dsb 1
 enemySpeed		.dsb 3
 enemyNo			.dsb 1
+enemyCtr		.dsb 1
+enemyIndex		.dsb 4
 
 messageNo		.dsb 1
 itemNo          .dsb 1
@@ -972,7 +975,7 @@ clrmem:
     sta $6100,x
     sta $6200,x
     sta $6300,x
-    lda #$FE
+    lda #$FF
     sta $0200,x
     inx
     bne clrmem
@@ -1222,7 +1225,7 @@ processInput:
     jsr moveUp
 processInputDone:
 
-	jsr enemyLogic
+;	jsr enemyLogic
 
     jsr updateFrames
 playingMAINdone:
