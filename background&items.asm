@@ -166,24 +166,24 @@ loadItemsDone:
 ; openChestsDone:
 ;     rts
 
-loadFlags:                  ; Loads itemFlags to RAM so they can be read and modified
-    ldx #$00                ;  such as for checking if chests should be open or closed
-@loop:
-    lda itemFlags,x
-    sta itemSoftFlags,x
-    inx
-    cpx #$40
-    bne @loop
+;loadFlags:                  ; Loads itemFlags to RAM so they can be read and modified
+;    ldx #$00                ;  such as for checking if chests should be open or closed
+;@loop:
+;    lda itemFlags,x
+;    sta itemSoftFlags,x
+;    inx
+;    cpx #$40
+;    bne @loop
 
-    ldx #$00
-@loop2
-    lda enemyFlags,x
-    sta enemySoftFlags,x
-    inx
-    cpx #$40
-    bne @loop2
-loadFlagsDone:
-    rts
+;    ldx #$00
+;@loop2
+;    lda enemyFlags,x
+;    sta enemySoftFlags,x
+;    inx
+;    cpx #$40
+;    bne @loop2
+;loadFlagsDone:
+;    rts
 
 fillPPUbuffer:
     lda PPU_Status          ; Makes a copy of background information to restore after textbox

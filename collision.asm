@@ -420,9 +420,9 @@ checkItemsDone:
     rts
 
 checkEnemies:
-    ldx nametable           ; Checks each enemy for collision with player
-    lda enemySoftFlags,x
-    sta enemyFlagsTemp
+;    ldx nametable           ; Checks each enemy for collision with player
+;    lda enemySoftFlags,x
+;    sta enemyFlagsTemp
     lda #$00
     sta enemyNo
 

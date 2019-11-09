@@ -336,27 +336,3 @@ updateSpriteLoc:            ; Moves all sprites relative to the X/Y position of 
     sta spriteRAM+19
 updateSpriteLocDone:
     rts
-
-updateEnemyLoc:             ; Moves all sprites in each enemy relative to the X/Y position of it's origin sprite
-    ldy #$00                ;  so only one X/Y location needs to be tracked for each enemy.
-    ldx #$00
-    lda enemyConstants,x
-    tax
-
-@loop
-    lda enemyConstants,x
-    tax
-    lda enemyY,y
-    sta enemyRAM+0,x
-    sta enemyRAM+4,x
-    lda enemyX,y
-    sta enemyRAM+3,x
-    clc
-    adc #$08
-    sta enemyRAM+7,x
-    inx
-    iny
-    cpy #$02
-    bne @loop
-updateEnemyLocDone:
-    rts

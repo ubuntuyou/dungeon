@@ -73,16 +73,8 @@ item_BOTTOM     .dsb 1
 item_LEFT       .dsb 1
 item_RIGHT      .dsb 1
 
-enemyY			.dsb 4
-enemyX			.dsb 4
-enemy_TOP		.dsb 1
-enemy_BOTTOM	.dsb 1
-enemy_LEFT  	.dsb 1
-enemy_RIGHT		.dsb 1
-enemySpeed		.dsb 3
-enemyNo			.dsb 1
-enemyCtr		.dsb 1
-enemyIndex		.dsb 4
+;
+
 
 messageNo		.dsb 1
 itemNo          .dsb 1
@@ -112,6 +104,19 @@ textAddrL       .dsb 1
 textAddrH       .dsb 1
 temp            .dsb 1
 
+	.enum $0400
+enemyIndex		.dsb 4	
+enemyY			.dsb 4
+enemyX			.dsb 4
+enemy_TOP		.dsb 1
+enemy_BOTTOM	.dsb 1
+enemy_LEFT  	.dsb 1
+enemy_RIGHT		.dsb 1
+enemySpeed		.dsb 3
+enemyNo			.dsb 1
+enemyCtr		.dsb 1
+
+
     .ende
 
 ;;;;;;;;;;;;;;;;;;;;;
@@ -129,7 +134,7 @@ PPU_Scroll      .equ $2005
 PPU_Address     .equ $2006
 PPU_Data        .equ $2007
 
-MAP_
+;MAP_
 MAP_Control     .equ $8000
 MAP_CHR0        .equ $A000
 MAP_CHR1        .equ $C000
@@ -1029,7 +1034,7 @@ loadNametable:
     sta nametable
 loadNametableDone:
 
-    jsr loadFlags
+;    jsr loadFlags
 
     lda #%10010000
     sta softPPU_Control
