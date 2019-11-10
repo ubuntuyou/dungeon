@@ -139,8 +139,6 @@ itemLoop:
     iny
     cpy #$40
     bne @fillLoop
-    
-    jsr loadFlags
 loadItemsDone:
     rts
 

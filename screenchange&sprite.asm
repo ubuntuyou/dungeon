@@ -105,7 +105,7 @@ textAddrH       .dsb 1
 temp            .dsb 1
 
 	.enum $0400
-enemyIndex		.dsb 4	
+enemyIndex		.dsb 4
 enemyY			.dsb 4
 enemyX			.dsb 4
 enemy_TOP		.dsb 1
@@ -1034,7 +1034,7 @@ loadNametable:
     sta nametable
 loadNametableDone:
 
-;    jsr loadFlags
+    jsr loadFlags
 
     lda #%10010000
     sta softPPU_Control
