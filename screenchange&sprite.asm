@@ -104,7 +104,8 @@ textAddrL       .dsb 1
 textAddrH       .dsb 1
 temp            .dsb 1
 
-	.enum $0400
+    .enum $0480
+
 enemyIndex		.dsb 4
 enemyY			.dsb 4
 enemyX			.dsb 4
