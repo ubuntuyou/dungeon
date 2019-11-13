@@ -182,13 +182,10 @@ getBGtypeDone:
     rts
 
 updateEnemyCol:             ; Updates the enemy bounding boxes for sprite on sprite collision
-    lda enemyConstants,x
+    lda enemyIndex,x
     tax
     lda enemyRAM,x
-;    clc
-;    adc #$08
     sta enemy_TOP
-;    lda enemyRAM+4,x
     clc
     adc #$08
     sta enemy_BOTTOM
@@ -197,9 +194,8 @@ updateEnemyCol:             ; Updates the enemy bounding boxes for sprite on spr
     clc
     adc #$02
     sta enemy_LEFT
-;    lda enemyRAM+3,x
     clc
-    adc #$0F
+    adc enemyIndex+2
     sta enemy_RIGHT
 updateEnemyColDone:
 	rts

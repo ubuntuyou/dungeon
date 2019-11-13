@@ -106,9 +106,9 @@ temp            .dsb 1
 
     .enum $0480
 
-enemyIndex		.dsb 4
-enemyY			.dsb 4
-enemyX			.dsb 4
+enemyIndex		.dsb 8
+enemyY			.dsb 8
+enemyX			.dsb 8
 enemy_TOP		.dsb 1
 enemy_BOTTOM	.dsb 1
 enemy_LEFT  	.dsb 1
@@ -116,7 +116,8 @@ enemy_RIGHT		.dsb 1
 enemySpeed		.dsb 3
 enemyNo			.dsb 1
 enemyCtr		.dsb 1
-
+enemyBBmodX     .dsb 1
+enemyBBmodY     .dsb 1
 
     .ende
 
@@ -986,10 +987,6 @@ clrmem:
     inx
     bne clrmem
 
-vblank2:
-    bit PPU_Status
-    bpl vblank2
-    
     lda #%00011110
     jsr setMapperControl
 
@@ -1012,22 +1009,6 @@ loadSprite1:
     bne @loop
 loadSprite1done:
 
-loadPalettes:
-    lda PPU_Status
-    lda #$3F
-    sta PPU_Address
-    lda #$00
-    sta PPU_Address
-
-    ldx #$00
-@loop:
-    lda palette,x
-    sta PPU_Data
-    inx
-    cpx #$20
-    bne @loop
-loadPalettesDone:
-
 loadNametable:
     lda #$01
     sta needDraw
@@ -1035,15 +1016,6 @@ loadNametable:
     sta nametable
 loadNametableDone:
 
-    jsr loadFlags
-
-    lda #%10010000
-    sta softPPU_Control
-    sta PPU_Control
-    lda #%00011110
-    sta softPPU_Mask
-    sta PPU_Mask
-    
     lda #$00
     sta secs
     lda #$00
@@ -1067,13 +1039,40 @@ loadNametableDone:
     sta textAddrL
     lda #$20
     sta textAddrH
-    
-    lda #$00
-    jsr setMapperPRG
+
     sta enemySpeed
 
     lda #$01
     sta playerSpeed
+    
+    jsr loadFlags
+
+vblank2:
+    bit PPU_Status
+    bpl vblank2
+
+loadPalettes:
+    lda PPU_Status
+    lda #$3F
+    sta PPU_Address
+    lda #$00
+    sta PPU_Address
+
+    ldx #$00
+@loop:
+    lda palette,x
+    sta PPU_Data
+    inx
+    cpx #$20
+    bne @loop
+loadPalettesDone:
+
+    lda #%10010000
+    sta softPPU_Control
+    sta PPU_Control
+    lda #%00011110
+    sta softPPU_Mask
+    sta PPU_Mask
 
     jmp MAIN
 
@@ -1231,7 +1230,7 @@ processInput:
     jsr moveUp
 processInputDone:
 
-;	jsr enemyLogic
+	jsr enemyLogic
 
     jsr updateFrames
 playingMAINdone:

@@ -1,45 +1,9 @@
-loadEnemies:
-    ldy #$00                ; Loads item sprites to sprite ram
-enemyLoop:
-    lda (enemyPtr),y
-;    cmp #$FE
-    beq @fillLoop
-    sta enemyRAM,y
-    iny
-    cpy #$20
-    bne enemyLoop
-
-@fillLoop                   ; Clear unused enemyRAM
-    lda #$FE
-    sta enemyRAM,y
-    iny
-    cpy #$40
-    bne @fillLoop
-
-    lda enemyRAM+0          ; Populate enemy X and Y variables for collision
-    sta enemyY+0
-    lda enemyRAM+8
-    sta enemyY+1
-;    lda enemyRAM+16
-;    sta enemyY+2
-;    lda enemyRAM+24
-;    sta enemyY+3
-
-    lda enemyRAM+3
-    sta enemyX+0
-    lda enemyRAM+11
-    sta enemyX+1
-;    lda enemyRAM+19
-;    sta enemyX+2
-;    lda enemyRAM+27
-;    sta enemyX+3
-loadEnemiesDone:
-    rts
-
 enemyLogic:
+    lda enemyFlagsTemp
+    beq enemyLogicDone
     lda enemySpeed+1
     clc
-    adc #$60
+    adc #$20
     sta enemySpeed+1
 
     lda #$00
@@ -79,18 +43,17 @@ horizontal:
 
 @next
     inx
-    cpx #$04
+    cpx enemyCtr
     bne vertical
 enemyLogicDone:
     rts
-    
+
 updateEnemyLoc:
 	lda enemyCtr
 	beq updateEnemyLocDone  ; Moves all sprites in each enemy relative to the X/Y position of it's origin sprite
     ldy #$00                ;  so only one X/Y location needs to be tracked for each enemy.
     ldx #$00
-    lda enemyIndex,x
-    tax
+    stx temp
 
 @loop
     lda enemyIndex,x
@@ -103,7 +66,8 @@ updateEnemyLoc:
     clc
     adc #$08
     sta enemyRAM+7,x
-    inx
+    inc temp
+    ldx temp
     iny
     cpy enemyCtr
     bne @loop
@@ -111,22 +75,34 @@ updateEnemyLocDone:
     rts
 
 enemyLoad:
+    ldx #$00
+    stx enemyFlagsTemp
+    stx enemyY+0            ; Blank out enemy X/Y vars
+    stx enemyY+1
+    stx enemyY+2
+    stx enemyY+3
+    stx enemyX+0
+    stx enemyX+1
+    stx enemyX+2
+    stx enemyX+3
+
+    dex
+    txa
+    inx
+@clr                        ; Clear enemyRAM
+    sta enemyRAM,x
+    inx
+    cpx #$40
+    bne @clr
+
+    ldx #$00
     ldy #$00
-    sty enemyFlagsTemp
-    sty enemyY+0            ; Blank out enemy X/Y vars
-    sty enemyY+1
-    sty enemyY+2
-    sty enemyY+3
-    sty enemyX+0
-    sty enemyX+1
-    sty enemyX+2
-    sty enemyX+3
 
     lda (enemyPtr),y
     sta enemyCtr            ; Store first element of enemy header in enemyCmp
     bne @continue	        ; If #$00 then we're done
 	rts
-	
+
 @continue
     iny
     lda (enemyPtr),y
@@ -157,7 +133,7 @@ enemyLoad:
     ldx #$00
 @loop3
     lda (enemyPtr),y
-    sta enemyIndex,x      	; Fill starting enemyX locations from enemy header
+    sta enemyIndex,x      	; Fill enemyIndex for enemyRAM offsets
     iny
     inx
     cpx enemyCtr
@@ -176,6 +152,9 @@ enemyLoad:
     rol enemyFlagsTemp
 	ldy #$00
 @loop5
+    lda #$00
+    sta enemyRAM+0,x
+    sta enemyRAM+3,x
     lda (enemyDefPtr),y     ; Load enemy def byte
     cmp #$FF                ; If #$FF then sprite is done
     beq @loop4              ; Back to loop for next enemy
@@ -201,12 +180,9 @@ enemyDefsH:
     .dh slime, eBubble
 
 slime:
-    .db $35,%00000011,$35,%01000011,$FE
+    .db $35,%00000011,$35,%01000011,$FF
 eBubble
-    .db $40,%00000011,$FE
-
-enemyConstants:
-    .db $00,$08,$10,$18
+    .db $40,%00000011,$FF
 
 enemyHeadersL:
     .dl enemyHeader00, enemyHeader01, enemyHeader02, enemyHeader03, enemyHeader04
@@ -228,33 +204,16 @@ enemyHeadersH:
     .dh enemyHeader30, enemyHeader31, enemyHeader32, enemyHeader33
     .dsb $0C,$00
 
-;enemyFlags:
-;    .db %00000000, %00000011, %00000000, %00000000, %00000000
-;    .dsb $0B,$00
-;    .db %00000001, %00001111, %00000000, %00000000
-;    .dsb $0C,$00
-;    .db %00000000, %00000000, %00000000, %00000000
-;    .dsb $0C,$00
-;    .db %00000000, %00000000, %00000000, %00000001
-;    .dsb $0C,$00
-
 enemyHeader00:
     .db $00
 
 enemyHeader01:
-    .db $04
-    .dl slime
-    .dh slime
-    .db $20,$30,$40,$50
-    .db $20,$30,$40,$50
-    .db $00,$08,$10,$18
-    ;    Y, Tile No,  rotation & palette,  X
-;    .db $5F,  $35,       %00000011,       $30  ; Enemy1 sprite 1
-;    .db $5F,  $35,       %01000011,       $38  ; Enemy1 sprite 2
-
-;    .db $67,  $35,       %00000011,       $48  ; Enemy2 sprite 1
-;    .db $67,  $35,       %01000011,       $50  ; Enemy2 sprite 2
-;    .db $00                                    ; No more enemy data for this room
+    .db $04                 ; Number of enemies in room
+    .dl slime               ; Low byte of pointer to enemyDef
+    .dh slime               ; High byte of pointer to enemyDef
+    .db $20,$30,$40,$50     ; Enemy starting Y locations ; These will be changed to packed hex
+    .db $20,$30,$40,$50     ; Enemy starting X locations ; Y = ($nn & $F0) >> 4; X = ($nn & $0F)
+    .db $00,$08,$10,$18     ; Index values for enemyRAM offsets
 
 enemyHeader02:
 enemyHeader03:
@@ -262,12 +221,12 @@ enemyHeader04:
     .db $00
 
 enemyHeader10:
-    .db $02
+    .db $05
     .dl eBubble
     .dh eBubble
-    .db $40,$60
-    .db $68,$80
-    .db $00,$04
+    .db $40,$60,$80,$A0,$C0
+    .db $68,$80,$98,$30,$50
+    .db $00,$04,$08,$0C,$10
 
 enemyHeader11:
     .db $04
@@ -307,3 +266,4 @@ enemyHeader33:
     .dh eBubble
     .db $40
     .db $68
+    .db $00
