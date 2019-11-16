@@ -165,7 +165,7 @@ getBGtype:
     clc
     adc spriteXpos
 ;    sta spriteYpos
-	tay
+    tay
 
     ldx nametable           ; Load pointers to get correct background
     lda bkgL,x
@@ -182,13 +182,10 @@ getBGtypeDone:
     rts
 
 updateEnemyCol:             ; Updates the enemy bounding boxes for sprite on sprite collision
-    lda enemyConstants,x
+    lda enemyIndex,x
     tax
     lda enemyRAM,x
-;    clc
-;    adc #$08
     sta enemy_TOP
-;    lda enemyRAM+4,x
     clc
     adc #$08
     sta enemy_BOTTOM
@@ -197,12 +194,11 @@ updateEnemyCol:             ; Updates the enemy bounding boxes for sprite on spr
     clc
     adc #$02
     sta enemy_LEFT
-;    lda enemyRAM+3,x
     clc
-    adc #$0F
+    adc enemyIndex+2
     sta enemy_RIGHT
 updateEnemyColDone:
-	rts
+    rts
 
 updatePlayerCol:            ; Updates the players bounding box for sprite on sprite collision
     lda playerY
@@ -420,9 +416,9 @@ checkItemsDone:
     rts
 
 checkEnemies:
-    ldx nametable           ; Checks each enemy for collision with player
-    lda enemySoftFlags,x
-    sta enemyFlagsTemp
+;    ldx nametable           ; Checks each enemy for collision with player
+;    lda enemySoftFlags,x
+;    sta enemyFlagsTemp
     lda #$00
     sta enemyNo
 

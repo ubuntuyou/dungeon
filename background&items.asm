@@ -106,12 +106,14 @@ drawBkg:
     lda enemyHeadersH,x
     sta enemyPtr+1
 
+
     jsr metaBackground      ; Draw the background and attributes, fill textbox buffer
     jsr loadAttributes      ; Check if chests need drawn and if they have already been opened
     jsr fillPPUbuffer       ; Copy background to buffer
     jsr loadItems           ; Load chests, tablets, etc.
-    jsr loadEnemies		    ; Load enemies
 ;    jsr openChests          ; Open chests if present and flag is clear
+	jsr random
+    jsr loadEnemies
     ldx #$00
     stx needDraw            ; Clear draw flag
     inx
@@ -174,13 +176,13 @@ loadFlags:                  ; Loads itemFlags to RAM so they can be read and mod
     cpx #$40
     bne @loop
 
-    ldx #$00
-@loop2
-	lda enemyFlags,x
-	sta enemySoftFlags,x
-	inx
-	cpx #$40
-	bne @loop2
+;    ldx #$00
+;@loop2
+;    lda enemyFlags,x
+;    sta enemySoftFlags,x
+;    inx
+;    cpx #$40
+;    bne @loop2
 loadFlagsDone:
     rts
 
