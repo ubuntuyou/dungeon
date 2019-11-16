@@ -165,7 +165,7 @@ getBGtype:
     clc
     adc spriteXpos
 ;    sta spriteYpos
-	tay
+    tay
 
     ldx nametable           ; Load pointers to get correct background
     lda bkgL,x
@@ -198,7 +198,7 @@ updateEnemyCol:             ; Updates the enemy bounding boxes for sprite on spr
     adc enemyIndex+2
     sta enemy_RIGHT
 updateEnemyColDone:
-	rts
+    rts
 
 updatePlayerCol:            ; Updates the players bounding box for sprite on sprite collision
     lda playerY

@@ -24,14 +24,17 @@ collisionPtr    .dsb 2
 itemHdrTblPtr   .dsb 2
 itemHdrPtr      .dsb 2
 textBoxPtr      .dsb 2
-enemyPtr		.dsb 2
-enemyDefPtr		.dsb 2
+enemyPtr        .dsb 2
+enemyDefPtr     .dsb 2
 
+	.enum $0040
 gameState       .dsb 1
 softPPU_Control .dsb 1
 softPPU_Mask    .dsb 1
 prgNo           .dsb 1
 prgNoOld        .dsb 1
+
+	.enum $0050
 
 metaTile        .dsb 1
 rowCounter      .dsb 1
@@ -40,12 +43,18 @@ nametable       .dsb 1
 needDraw        .dsb 1
 needItems       .dsb 1
 
+	.enum $0060
 hrs             .dsb 1
 mins            .dsb 1
 secs            .dsb 1
 tick            .dsb 1
 
 sleeping        .dsb 1
+
+RNG				.dsb 1
+RNGseed			.dsb 1
+
+	.enum $0070
 
 buttons         .dsb 1
 oldButtons      .dsb 1
@@ -54,6 +63,8 @@ upIsPressed     .dsb 1
 downIsPressed   .dsb 1
 leftIsPressed   .dsb 1
 rightIsPressed  .dsb 1
+
+	.enum $0080
 
 playerDir       .dsb 1
 playerDirOld    .dsb 1
@@ -68,18 +79,19 @@ spriteX         .dsb 1
 spriteY         .dsb 1
 spriteXpos      .dsb 1
 
+	.enum $0090
+
 item_TOP        .dsb 1
 item_BOTTOM     .dsb 1
 item_LEFT       .dsb 1
 item_RIGHT      .dsb 1
 
-;
-
-
-messageNo		.dsb 1
+messageNo       .dsb 1
 itemNo          .dsb 1
 itemHdrNo       .dsb 1
 itemStrAddr     .dsb 1
+
+	.enum $00A0
 
 BGtype          .dsb 1
 
@@ -89,6 +101,8 @@ animationEnable .dsb 1
 frameCounter    .dsb 2
 animationNumber .dsb 1
 animConstNumber .dsb 3
+
+	.enum $00B0
 
 textCounter     .dsb 1
 needTextAttrib  .dsb 1
@@ -106,16 +120,16 @@ temp            .dsb 1
 
     .enum $0480
 
-enemyIndex		.dsb 8
-enemyY			.dsb 8
-enemyX			.dsb 8
-enemy_TOP		.dsb 1
-enemy_BOTTOM	.dsb 1
-enemy_LEFT  	.dsb 1
-enemy_RIGHT		.dsb 1
-enemySpeed		.dsb 3
-enemyNo			.dsb 1
-enemyCtr		.dsb 1
+enemyIndex      .dsb 8
+enemyY          .dsb 8
+enemyX          .dsb 8
+enemy_TOP       .dsb 1
+enemy_BOTTOM    .dsb 1
+enemy_LEFT      .dsb 1
+enemy_RIGHT     .dsb 1
+enemySpeed      .dsb 3
+enemyNo         .dsb 1
+enemyCtr        .dsb 1
 enemyBBmodX     .dsb 1
 enemyBBmodY     .dsb 1
 
@@ -144,7 +158,7 @@ MAP_PRG         .equ $E000
 
 spriteRAM       .equ $0204
 itemRAM         .equ $0220
-enemyRAM		.equ $0260
+enemyRAM        .equ $0260
 itemSoftFlags   .equ $6000
 enemySoftFlags  .equ $6100
 bkgBuffer       .equ $6200
@@ -153,7 +167,7 @@ atbBuffer       .equ $62E0
 textBuffer      .equ $0400
 textBoxStartL   .equ $41
 textBoxStartH   .equ $20
-itemNumBuff		.equ $0580
+itemNumBuff     .equ $0580
 
 controller1     .equ $4016
 
@@ -1030,7 +1044,7 @@ loadNametableDone:
     
     lda #$07
     sta textCounter
-    
+
     lda #$00
     sta gameState
     lda #$08
@@ -1045,6 +1059,9 @@ loadNametableDone:
     lda #$01
     sta playerSpeed
     
+    lda #$FF
+    sta RNGseed
+
     jsr loadFlags
 
 vblank2:
@@ -1161,6 +1178,35 @@ setMapperPRG:
     sta MAP_PRG
 setMapperPRGdone:
     rts
+
+random:
+	lda RNG
+	asl A
+	asl A
+	clc
+	adc RNG
+	clc
+	adc RNGseed
+	sta RNG
+	
+	tay
+	and #$F0
+	cmp #$40
+	bcc random
+	cmp #$C0
+	bcs random
+
+	tya
+	and #$0F
+	cmp #$04
+	bcc random
+	cmp #$0C
+	bcs random
+
+	tya
+randomDone:
+	rts
+
     
 ;;;;;;;;;;;;;;;;;;;;
 ;;;   INCLUDES   ;;;
@@ -1205,7 +1251,25 @@ mainIndirect:
 mainIndirectDone:
     rts
 
+waitForInput:
+	inc tick
+	jsr latchController
+	lda buttons
+	beq waitForInputDone
+	lda tick
+	ora #$01
+	sta RNGseed
+waitForInputDone:
+	rts
+
 playingMAIN:
+	lda RNGseed
+	cmp #$FF
+	bne updateLoc
+	jsr waitForInput
+
+
+updateLoc:
     lda playerDir
     sta playerDirOld
 
@@ -1230,7 +1294,7 @@ processInput:
     jsr moveUp
 processInputDone:
 
-	jsr enemyLogic
+    jsr enemyLogic
 
     jsr updateFrames
 playingMAINdone:
@@ -1417,18 +1481,18 @@ textNMIindH:
 MAIN:
     inc sleeping        ; MAIN jumps here after one iteration. Increments sleeping so loop is active.
 loop:
-    lda sleeping		; Do-nothing routine. NMI returns here with sleeping set to 0.
+    lda sleeping        ; Do-nothing routine. NMI returns here with sleeping set to 0.
     bne loop
 
     jsr mainIndirect
 
 showCPUusageBar:
-    ldx #%00011111  	; sprites + background + monochrome (i.e. WHITE)
+    ldx #%00011111      ; sprites + background + monochrome (i.e. WHITE)
     stx $2001
-    ldy #$08  			; add about 23 for each additional line (leave it on WHITE for one scan line)
+    ldy #$08            ; add about 23 for each additional line (leave it on WHITE for one scan line)
 -   dey
     bne -
-    dex    				; sprites + background + NO monochrome  (i.e. #%00011110)
+    dex                 ; sprites + background + NO monochrome  (i.e. #%00011110)
     stx $2001
 
     jmp MAIN
