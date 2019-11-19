@@ -145,7 +145,7 @@ lookupMessage:
     sta textBuffer,y       ; Store message in textBuffer
     beq lookupMessageDone
     iny
-    bvc @loop
+    bne @loop
 lookupMessageDone:
     rts
 

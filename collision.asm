@@ -187,15 +187,15 @@ updateEnemyCol:             ; Updates the enemy bounding boxes for sprite on spr
     lda enemyRAM,x
     sta enemy_TOP
     clc
-    adc #$08
+    adc enemyBBmodY
     sta enemy_BOTTOM
 
     lda enemyRAM+3,x
-    clc
-    adc #$02
+;    clc
+;    adc #$02
     sta enemy_LEFT
     clc
-    adc enemyIndex+2
+    adc enemyBBmodX
     sta enemy_RIGHT
 updateEnemyColDone:
     rts
@@ -203,10 +203,10 @@ updateEnemyColDone:
 updatePlayerCol:            ; Updates the players bounding box for sprite on sprite collision
     lda playerY
     clc
-    adc #$06
+    adc #$0A
     sta player_TOP
     clc
-    adc #$10
+    adc #$08
     sta player_BOTTOM
 
     lda playerX
@@ -214,7 +214,7 @@ updatePlayerCol:            ; Updates the players bounding box for sprite on spr
     adc #$01
     sta player_LEFT
     clc
-    adc #$07
+    adc #$05
     sta player_RIGHT
 updatePlayerColDone:
     rts
@@ -239,16 +239,16 @@ updateItemCol:
     sta item_TOP
     lda itemRAM+4,x
     clc
-    adc #$08
+    adc #$0A
     sta item_BOTTOM
 
     lda itemRAM+3,x
     clc
-    adc #$09
+    adc #$04
     sta item_LEFT
     lda itemRAM+3,x
     clc
-    adc #$09
+    adc #$0A
     sta item_RIGHT
     rts
 

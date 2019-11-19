@@ -13,6 +13,9 @@ enemyLogic:
     ldx #$00                ; First need to calculate all of enemies next movements
 vertical:                   ;  then update their individual enemyY and enemyX vars
     lda enemyY,x
+    sec
+    sbc enemyBBmodY
+    sbc enemyBBmodY
     cmp playerY
     beq horizontal
     bcc @down
@@ -75,6 +78,7 @@ updateEnemyLocDone:
     rts
 
 loadEnemies:
+clearEnemyVars:
     ldx #$00
     stx enemyFlagsTemp
     stx enemyY+0            ; Blank out enemy X/Y vars
@@ -97,6 +101,7 @@ loadEnemies:
 
     dex
     txa
+clearEnemyRAM:
     inx
 @clr                        ; Clear enemyRAM
     sta enemyRAM,x
@@ -106,13 +111,11 @@ loadEnemies:
 
     ldx #$00
     ldy #$00
-
+loadEnemyHeaders:
     lda (enemyPtr),y
     sta enemyCtr            ; Store first element of enemy header in enemyCmp
-    bne @continue           ; If #$00 then we're done
-    rts
+    beq loadEnemiesDone     ; If #$00 then we're done
 
-@continue
     iny
     lda (enemyPtr),y
     sta enemyDefPtr+0
@@ -122,14 +125,15 @@ loadEnemies:
     iny
 
     ldx #$00
-@loop2
+@loop
     lda (enemyPtr),y
     sta enemyIndex,x        ; Fill enemyIndex for enemyRAM offsets
     iny
     inx
     cpx enemyCtr
-    bne @loop2
-    
+    bne @loop
+
+loadEnemyCoords:
     ldx enemyCtr
 @loop
 	jsr random
@@ -141,34 +145,36 @@ loadEnemies:
 
 	lda RNG
 	tay
-	and #$0F                ; enemyX = (#$nn & #$0F) << 4;
-	asl                     ; enemyY = (#$nn & #$F0);
+
+	asl
 	asl
 	asl
 	asl
 	sta enemyX-1,x
 	tya
-	and #$F0
+
 	sta enemyY-1,x
 	dex
 	bne @loop
 
+loadEnemyDefs:
     lda enemyCtr
     sta temp                ; Initialize temp to #$FF so that first loop sets it to #$00
     ldx #$00
-@loop3
+@loop
+	sty temp+1
     ldy temp
     dey
-    bmi loadEnemiesDone     ; If temp == #$FF then we're done here
+    bmi loadEnemyBB         ; If temp == #$FF then we're done here
     sty temp                ; Otherwise store new value to temp and load a sprite
     sec
     rol enemyFlagsTemp
 
     ldy #$00
-@loop4
+@loop1
     lda (enemyDefPtr),y     ; Load enemy def byte
     cmp #$FF                ; If #$FF then sprite is done
-    beq @loop3              ; Back to loop for next enemy
+    beq @loop              ; Back to loop for next enemy
 
     sta enemyRAM+1,x        ; Else store byte, load next byte and store it.
     iny
@@ -179,7 +185,16 @@ loadEnemies:
     inx
     inx
     inx                     ; Increment X and Y counters
-    bne @loop4              ; Always branch
+    bne @loop1              ; Always branch
+
+loadEnemyBB:
+	ldy temp+1
+	iny
+	lda (enemyDefPtr),y
+	sta enemyBBmodY
+	iny
+	lda (enemyDefPtr),y
+	sta enemyBBmodX
 loadEnemiesDone:
     rts
 
@@ -189,9 +204,9 @@ enemyDefsH:
     .dh slime, eBubble
 
 slime:
-    .db $35,%00000011,$35,%01000011,$FF
+    .db $35,%00000011,$35,%01000011,$FF,$07,$0F
 eBubble
-    .db $40,%00000010,$FF
+    .db $40,%00000010,$FF,$07,$07
 
 enemyHeadersL:
     .dl enemyHeader00, enemyHeader01, enemyHeader02, enemyHeader03, enemyHeader04
@@ -220,7 +235,6 @@ enemyHeader01:
     .db $04                 ; Number of enemies in room
     .dl slime               ; Low byte of pointer to enemyDef
     .dh slime               ; High byte of pointer to enemyDef
-;	.db $33,$47,$75,$84     ; Packed enemy coordinates
     .db $00,$08,$10,$18     ; Index values for enemyRAM offsets
 
 enemyHeader02:
@@ -232,14 +246,12 @@ enemyHeader10:
     .db $05
     .dl eBubble
     .dh eBubble
-;	.db $46,$68,$89,$A3,$C5
     .db $00,$04,$08,$0C,$10
 
 enemyHeader11:
     .db $04
     .dl slime
     .dh slime
-;	.db $88,$99,$75,$A6
     .db $00,$08,$10,$18
 
 enemyHeader12:
@@ -270,5 +282,4 @@ enemyHeader33:
     .db $01
     .dl eBubble
     .dh eBubble
-;    .db $46
     .db $00

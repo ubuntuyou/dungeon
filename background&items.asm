@@ -2,21 +2,21 @@
 ;;;   METATILES   ;;;
 ;;;;;;;;;;;;;;;;;;;;;
 
-    ;;;  00   01   02   03   04   05   06   07   08   09
+    ;;;  00   01   02   03   04   05   06   07   08   09   0A   0B   0C
 topLeft:
-    .db $00, $02, $04, $0E, $22, $24, $26, $28, $EE, $0A
+    .db $00, $02, $04, $06, $22, $24, $26, $28, $FE, $0A, $08, $FE, $FE
 
 topRight:
-    .db $01, $03, $05, $0F, $23, $25, $27, $29, $EF, $0B
+    .db $01, $03, $05, $07, $23, $25, $27, $29, $FE, $0B, $09, $FE, $FE
 
 bottomLeft:
-    .db $10, $12, $14, $1E, $32, $25, $36, $38, $FE, $1A
+    .db $10, $12, $14, $16, $32, $25, $36, $38, $FE, $1A, $18, $1A, $FE
 
 bottomRight:
-    .db $11, $13, $15, $1F, $33, $24, $37, $39, $FF, $1B
-    
+    .db $11, $13, $15, $17, $33, $24, $37, $39, $FE, $1B, $FE, $1B, $FE
+
 metaAtb:
-    .db $01, $01, $01, $01, $00, $00, $00, $00, $01, $01
+    .db $01, $01, $01, $01, $00, $00, $00, $00, $01, $01, $01, $01, $00
 
 metaBackground:
     lda #$00
@@ -112,7 +112,6 @@ drawBkg:
     jsr fillPPUbuffer       ; Copy background to buffer
     jsr loadItems           ; Load chests, tablets, etc.
 ;    jsr openChests          ; Open chests if present and flag is clear
-	jsr random
     jsr loadEnemies
     ldx #$00
     stx needDraw            ; Clear draw flag
@@ -320,10 +319,10 @@ itemHeader20:
     .db $FF
 
 itemHeader21:
-    .db $9F,$33,%00000000,$A0
-    .db $9F,$33,%01000000,$A8
-    .db $A7,$34,%00000000,$A0
-    .db $A7,$34,%01000000,$A8
+    .db $7F,$33,%00000000,$78
+    .db $7F,$33,%01000000,$80
+    .db $87,$34,%00000000,$78
+    .db $87,$34,%01000000,$80
     .db $FF
 
 itemHeader22:
