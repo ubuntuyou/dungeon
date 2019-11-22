@@ -152,7 +152,7 @@ loadEnemyCoords:
 	asl
 	sta enemyX-1,x
 	tya
-
+	and #$F0
 	sta enemyY-1,x
 	dex
 	bne @loop

@@ -364,35 +364,7 @@ itemCollision:
 @noHit:
 itemCollisionDone:
     rts
-
-enemyCollision:
-   lda player_RIGHT         ; Checks player bounding box for collision with item bounding box
-   cmp enemy_LEFT           ; If hit is detected then switch to textbox state and process
-   bcc @noHit               ; the appropriate message
-
-   lda player_BOTTOM
-   cmp enemy_TOP
-   bcc @noHit
-
-   lda enemy_RIGHT
-   cmp player_LEFT
-   bcc @noHit
-
-   lda enemy_BOTTOM
-   cmp player_TOP
-   bcc @noHit
-
-@hit:
-    lda playerX
-    sec
-    sbc #$10
-    sta playerX
-
-@noHit:
-enemyCollisionDone:
-    rts
-
-
+    
 checkItems:
     ldx nametable           ; Checks each item for collision with player
     lda itemSoftFlags,x
@@ -415,11 +387,84 @@ checkItems:
 checkItemsDone:
     rts
 
+enemyCollision:
+   lda player_RIGHT         ; Checks player bounding box for collision with item bounding box
+   cmp enemy_LEFT           ; If hit is detected then switch to textbox state and process
+   bcc @noHit               ; the appropriate message
+
+   lda player_BOTTOM
+   cmp enemy_TOP
+   bcc @noHit
+
+   lda enemy_RIGHT
+   cmp player_LEFT
+   bcc @noHit
+
+   lda enemy_BOTTOM
+   cmp player_TOP
+   bcc @noHit
+
+@hit:
+	ldx enemyNo
+
+	lda playerDir
+	cmp #facingUp
+	beq @up
+	cmp #facingDown
+	beq @down
+	cmp #facingLeft
+	beq @left
+@right
+    lda playerX
+    sec
+    sbc #$02
+    sta playerX
+
+    lda enemyX,x
+    clc
+    adc #$04
+    sta enemyX,x
+    rts
+@left
+    lda playerX
+    clc
+    adc #$02
+    sta playerX
+
+    lda enemyX,x
+    sec
+    sbc #$04
+    sta enemyX,x
+    rts
+@down
+	lda playerY
+    sec
+    sbc #$02
+    sta playerY
+
+    lda enemyY,x
+    clc
+    adc #$04
+    sta enemyY,x
+    rts
+@up
+	lda playerY
+    clc
+    adc #$02
+    sta playerY
+
+    lda enemyY,x
+    sec
+    sbc #$04
+    sta enemyY,x
+@noHit:
+enemyCollisionDone:
+    rts
+
 checkEnemies:
-;    ldx nametable           ; Checks each enemy for collision with player
-;    lda enemySoftFlags,x
-;    sta enemyFlagsTemp
-    lda #$00
+	lda enemyCtr
+	beq checkEnemiesDone
+    lda enemyCtr
     sta enemyNo
 
 @loop:
@@ -432,9 +477,9 @@ checkEnemies:
     jsr enemyCollision
 
 @skip:
-    inc enemyNo
-    lda enemyNo
-    cmp #$08
-    bne @loop
+    dec enemyNo
+;    lda enemyNo
+;    cmp enemyCtr
+    bpl @loop
 checkEnemiesDone:
     rts
