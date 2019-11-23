@@ -123,6 +123,7 @@ temp            .dsb 2
 enemyIndex      .dsb 8
 enemyY          .dsb 8
 enemyX          .dsb 8
+enemyDir		.dsb 8
 enemy_TOP       .dsb 1
 enemy_BOTTOM    .dsb 1
 enemy_LEFT      .dsb 1
@@ -211,7 +212,6 @@ animationConstants:
     .db $3C,$46,$50,$5A,$64,$6E
 
 palette:
-    ;   BLK,WHT,LRd,DRd   BLK,DBL,LGr,DGr   BLK,WHT,LGr,DGr   BLK,DBL,RED,WHT
     .db $0F,$2D,$10,$20,  $0F,$08,$0A,$0C,  $0F,$03,$12,$13,  $0F,$0C,$16,$30   ;;background palette
     .db $0F,$17,$00,$10,  $0F,$17,$28,$39,  $0F,$20,$10,$00,  $0F,$17,$1A,$29   ;;sprite palette
 
@@ -1288,10 +1288,8 @@ readInput:
 readInputDone:
 
 processInput:
-    jsr moveRight
-    jsr moveLeft
-    jsr moveDown
-    jsr moveUp
+    jsr moveH
+    jsr moveV
 processInputDone:
 
     jsr enemyLogic

@@ -1,20 +1,19 @@
 enemyLogic:
     lda enemyFlagsTemp
     beq enemyLogicDone
+
     lda enemySpeed+1
     clc
     adc #$20
     sta enemySpeed+1
-
     lda #$00
     adc #$00
     sta temp
 
-    ldx #$00                ; First need to calculate all of enemies next movements
+    ldx enemyCtr                ; First need to calculate all of enemies next movements
 vertical:                   ;  then update their individual enemyY and enemyX vars
     lda enemyY,x
     sec
-    sbc enemyBBmodY
     sbc enemyBBmodY
     cmp playerY
     beq horizontal
@@ -45,9 +44,8 @@ horizontal:
     sta enemyX,x
 
 @next
-    inx
-    cpx enemyCtr
-    bne vertical
+    dex
+    bpl vertical
 enemyLogicDone:
     rts
 
@@ -236,7 +234,6 @@ enemyHeader01:
     .dl slime               ; Low byte of pointer to enemyDef
     .dh slime               ; High byte of pointer to enemyDef
     .db $00,$08,$10,$18     ; Index values for enemyRAM offsets
-
 enemyHeader02:
 enemyHeader03:
 enemyHeader04:

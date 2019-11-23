@@ -77,6 +77,8 @@ readUp:
     lda #$01
     sta upIsPressed         ; Set upIsPressed flag, animation enable flag, and player direction
     sta animationEnable
+    lda #$FF
+    sta playerSpeed
     lda #facingUp
     sta playerDir
 
@@ -123,6 +125,7 @@ readDown:
     lda #$01
     sta downIsPressed       ; Set downIsPressed flag, animationEnable flag, and player direction
     sta animationEnable
+    sta playerSpeed
     lda #facingDown
     sta playerDir
 
@@ -169,6 +172,8 @@ readLeft:
     lda #$01
     sta leftIsPressed       ; Set leftIsPressed flag, animationEnable flag, and player direction
     sta animationEnable
+    lda #$FF
+    sta playerSpeed
     lda #facingLeft
     sta playerDir
 
@@ -212,6 +217,7 @@ readRight:
     lda #$01
     sta rightIsPressed      ; Set rightIsPressed flag, animationEnable flag, and player direction
     sta animationEnable
+    sta playerSpeed
     lda #facingRight
     sta playerDir
 
@@ -232,84 +238,52 @@ checkNametableRight
 readRightDone:
     rts
 
-moveUp:
+moveV:
     lda upIsPressed
-    beq moveUpDone
+    bne @move
+    lda downIsPressed
+    bne @move
+    rts
+@move
     lda leftIsPressed
-    bne moveUpDone          ; If Up is not pressed or anything other than Up is pressed then skip
+    bne moveVDone          ; If neither Up or Down is pressed or anything other than Up is pressed then skip
     lda rightIsPressed
-    bne moveUpDone
-    lda playerSpeed+1       ; Otherwise calculate playerSpeed and add it to playerY
-    sec
-    sbc #$00;40
-    sta playerSpeed+1
+    bne moveVDone
+
     lda playerY
-    sbc playerSpeed
+    clc
+    adc playerSpeed
     sta playerY
+
     jsr checkCollision      ; Check for collision with background
     lda #$00
     sta upIsPressed         ; And clear upIsPressed flag
-moveUpDone:
+    sta downIsPressed
+moveVDone:
     rts
 
-moveDown:
-    lda downIsPressed
-    beq moveDownDone
+moveH:
     lda leftIsPressed
-    bne moveDownDone        ; If Down is not pressed or anything other than Down is pressed then skip
+    bne @move
     lda rightIsPressed
-    bne moveDownDone
-    lda playerSpeed+1       ; Otherwise calculate playerSpeed and subtract it from playerY
-    clc
-    adc #$00;40
-    sta playerSpeed+1
-    lda playerY
-    adc playerSpeed
-    sta playerY
-    jsr checkCollision      ; Check for collision with background
-    lda #$00
-    sta downIsPressed       ; And clear downIsPressed flag
-moveDownDone:
+    bne @move
     rts
-
-moveLeft:
-    lda leftIsPressed
-    beq moveLeftDone
+@move
     lda upIsPressed
-    bne moveLeftDone        ; If Left is not pressed or anything other than Left is pressed then skip
+    bne moveHDone        ; If neither Left or Right is pressed or anything other than Left is pressed then skip
     lda downIsPressed
-    bne moveLeftDone
-    lda playerSpeed+1       ; Otherwise calculate playerSpeed and add it to playerX
-    sec
-    sbc #$00;40
-    sta playerSpeed+1
+    bne moveHDone
+
     lda playerX
-    sbc playerSpeed
+    clc
+    adc playerSpeed
     sta playerX
+
     jsr checkCollision      ; Check for collision with background
     lda #$00
     sta leftIsPressed       ; And clear leftIsPressed flag
-moveLeftDone:
-    rts
-
-moveRight:
-    lda rightIsPressed
-    beq moveRightDone
-    lda upIsPressed
-    bne moveRightDone       ; If Right is not pressed or anything other than Right is pressed then skip
-    lda downIsPressed
-    bne moveRightDone       ; Otherwitse calculate playerSpeed and subtract it from playerX
-    lda playerSpeed+1
-    clc
-    adc #$00;40
-    sta playerSpeed+1
-    lda playerX
-    adc playerSpeed
-    sta playerX
-    jsr checkCollision      ; Check for collision with background
-    lda #$00
-    sta rightIsPressed      ; And clear rightIsPressed flag
-moveRightDone:
+    sta rightIsPressed
+moveHDone:
     rts
 
 updateSpriteLoc:            ; Moves all sprites relative to the X/Y position of the origin sprite

@@ -478,8 +478,6 @@ checkEnemies:
 
 @skip:
     dec enemyNo
-;    lda enemyNo
-;    cmp enemyCtr
     bpl @loop
 checkEnemiesDone:
     rts
