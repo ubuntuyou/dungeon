@@ -78,6 +78,8 @@ player_RIGHT    .dsb 1
 spriteX         .dsb 1
 spriteY         .dsb 1
 spriteXpos      .dsb 1
+spriteSide		.dsb 1
+spriteLoc		.dsb 1
 
 	.enum $0090
 
@@ -1206,6 +1208,21 @@ random:
 	tya
 randomDone:
 	rts
+	
+waitForInput:
+	lda RNGseed
+	cmp #$FF
+	bne waitForInputDone
+
+	inc tick
+	jsr latchController
+	lda buttons
+	beq waitForInputDone
+	lda tick
+	ora #$01
+	sta RNGseed
+waitForInputDone:
+	rts
 
     
 ;;;;;;;;;;;;;;;;;;;;
@@ -1251,21 +1268,6 @@ mainIndirect:
 mainIndirectDone:
     rts
 
-waitForInput:
-	lda RNGseed
-	cmp #$FF
-	bne waitForInputDone
-
-	inc tick
-	jsr latchController
-	lda buttons
-	beq waitForInputDone
-	lda tick
-	ora #$01
-	sta RNGseed
-waitForInputDone:
-	rts
-
 playingMAIN:
 	jsr waitForInput
 
@@ -1277,6 +1279,7 @@ updateLoc:
     jsr updateEnemyLoc
     jsr updatePlayerCol
     jsr checkEnemies
+
 
 readInput:
     jsr readRight
@@ -1291,7 +1294,6 @@ processInput:
     jsr moveH
     jsr moveV
 processInputDone:
-
     jsr enemyLogic
 
     jsr updateFrames

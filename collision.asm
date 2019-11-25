@@ -18,7 +18,7 @@ up:
     sta spriteY
     lda playerX
     clc
-    adc #$09
+    adc #$07
     sta spriteX
     jmp compareToBackground
 down:
@@ -26,7 +26,7 @@ down:
     beq left
     lda playerY
     clc
-    adc #$19
+    adc #$18
     sta spriteY
     lda playerX
     sec
@@ -36,11 +36,11 @@ down:
 
     lda playerY
     clc
-    adc #$19
+    adc #$18
     sta spriteY
     lda playerX
     clc
-    adc #$09
+    adc #$07
     sta spriteX
     jmp compareToBackground
 left:
@@ -74,7 +74,7 @@ right:
     sta spriteY
     lda playerX
     clc
-    adc #$0A
+    adc #$08
     sta spriteX
     jsr compareToBackground
 
@@ -84,7 +84,7 @@ right:
     sta spriteY
     lda playerX
     clc
-    adc #$0A
+    adc #$08
     sta spriteX
     jmp compareToBackground
 checkCollisionDone:
@@ -97,58 +97,42 @@ compareToBackground:
 cpUp:                       ;  then eject the player
     lda upIsPressed
     beq cpDown
-    lda playerY
-    tay
-    and #$0F
-    eor #$0F
-    sta temp
-    tya
-    clc
-    adc temp
-    sta playerY
-    rts
+	lda spriteY
+	and #$0F
+	eor #$0F
+	clc
+	adc playerY
+	sta playerY
+	rts
 cpDown:
     lda downIsPressed
     beq cpLeft
-    lda playerY
-    tay
-    clc
-    adc #$09
-    and #$0F
-    sta temp
-    tya
-    sec
-    sbc temp
-    sta playerY
-    rts
+	lda spriteY
+	and #$0F
+	eor #$FF
+	clc
+	adc playerY
+	sta playerY
+	rts
 cpLeft:
     lda leftIsPressed
     beq cpRight
-    lda playerX
-    tax
-    sec
-    sbc #$03
-    and #$0F
-    eor #$0F
-    sta temp
-    txa
-    clc
-    adc temp
-    sta playerX
+	lda spriteX
+	and #$0F
+	eor #$0F
+	clc
+	adc playerX
+	sta playerX
     rts
 cpRight:
     lda rightIsPressed
     beq compareToBackgroundDone
-    lda playerX
-    tax
-    clc
-    adc #$0A
-    and #$0F
-    sta temp
-    txa
-    sec
-    sbc temp
-    sta playerX
+	lda spriteX
+	and #$0F
+	eor #$FF
+	clc
+	adc playerX
+	sta playerX
 compareToBackgroundDone:
     rts
 
