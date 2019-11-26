@@ -1,280 +1,147 @@
-; checkCollision:
-; up:
-;     lda upIsPressed         ; Checks player's hotspots for collision with background.
-;     beq down                ; Called in the moveUp, moveDown, moveLeft, moveRight routines.
-;     lda playerY             ; Adds/subtracts a specific amount to playerX/Y
-;     clc                     ;  so that instead of basing collision off of the player's top left corner
-;     adc #$10                ;  it can check various points around the sprite similar to a bounding box.
-;     sta spriteY
-;     lda playerX
-;     sec
-;     sbc #$02
-;     sta spriteX
-;     jsr compareToBackground
-; 
-;     lda playerY
-;     clc
-;     adc #$10
-;     sta spriteY
-;     lda playerX
-;     clc
-;     adc #$07
-;     sta spriteX
-;     jmp compareToBackground
-; down:
-;     lda downIsPressed
-;     beq left
-;     lda playerY
-;     clc
-;     adc #$18
-;     sta spriteY
-;     lda playerX
-;     sec
-;     sbc #$02
-;     sta spriteX
-;     jsr compareToBackground
-; 
-;     lda playerY
-;     clc
-;     adc #$18
-;     sta spriteY
-;     lda playerX
-;     clc
-;     adc #$07
-;     sta spriteX
-;     jmp compareToBackground
-; left:
-;     lda leftIsPressed
-;     beq right
-;     lda playerY
-;     clc
-;     adc #$11
-;     sta spriteY
-;     lda playerX
-;     sec
-;     sbc #$03
-;     sta spriteX
-;     jsr compareToBackground
-; 
-;     lda playerY
-;     clc
-;     adc #$18
-;     sta spriteY
-;     lda playerX
-;     sec
-;     sbc #$03
-;     sta spriteX
-;     jmp compareToBackground
-; right:
-;     lda rightIsPressed
-;     beq checkCollisionDone
-;     lda playerY
-;     clc
-;     adc #$11
-;     sta spriteY
-;     lda playerX
-;     clc
-;     adc #$08
-;     sta spriteX
-;     jsr compareToBackground
-; 
-;     lda playerY
-;     clc
-;     adc #$18
-;     sta spriteY
-;     lda playerX
-;     clc
-;     adc #$08
-;     sta spriteX
-;     jmp compareToBackground
-; checkCollisionDone:
-;     rts
-
 checkCollision:
 cpUp:
-    lda upIsPressed
-    beq cpDown
+	lda upIsPressed
+	beq cpDown
 
-    lda playerY
-    sta spriteLoc
-    clc
-    adc #$10
-    sta spriteY
-    sta hotspot
-    lda #$0F
-    sta ejectMod
+	lda playerY
+	sta spriteLoc
+	clc
+	adc #$10
+	sta spriteY
+	sta hotspot
+	lda #$0F
+	sta ejectMod
 
-    lda playerX
-    sta spriteX
-    jsr compareToBkg
-    lda spriteLoc
-    cmp playerY
-    beq @next
-    sta playerY
-    rts
+	lda playerX
+	sec
+	sbc #$01
+	sta spriteX
+	jsr compareToBkg
+	lda spriteLoc
+	cmp playerY
+	beq @next
+	sta playerY
+	rts
 @next
-    lda playerX
-    clc
-    adc #$07
-    sta spriteX
-    jsr compareToBkg
-    lda spriteLoc
-    sta playerY
-    rts
+	lda playerX
+	clc
+	adc #$07
+	sta spriteX
+	jsr compareToBkg
+	lda spriteLoc
+	sta playerY
+	rts
 cpDown:
-    lda downIsPressed
-    beq cpLeft
+	lda downIsPressed
+	beq cpLeft
 
-    lda playerY
-    sta spriteLoc
-    clc
-    adc #$18
-    sta spriteY
-    sta hotspot
-    lda #$FF
-    sta ejectMod
+	lda playerY
+	sta spriteLoc
+	clc
+	adc #$18
+	sta spriteY
+	sta hotspot
+	lda #$FF
+	sta ejectMod
 
-    lda playerX
-    sta spriteX
-    jsr compareToBkg
-    lda spriteLoc
-    cmp playerY
-    beq @next
-    sta playerY
-    rts
+	lda playerX
+	sec
+	sbc #$01
+	sta spriteX
+	jsr compareToBkg
+	lda spriteLoc
+	cmp playerY
+	beq @next
+	sta playerY
+	rts
 @next
-    lda playerX
-    clc
-    adc #$07
-    sta spriteX
-    jsr compareToBkg
-    lda spriteLoc
-    sta playerY
-    rts
+	lda playerX
+	clc
+	adc #$07
+	sta spriteX
+	jsr compareToBkg
+	lda spriteLoc
+	sta playerY
+	rts
 cpLeft:
-    lda leftIsPressed
-    beq cpRight
+	lda leftIsPressed
+	beq cpRight
 
-    lda playerX
-    sta spriteLoc
-    sec
-    sbc #$01
-    sta spriteX
-    sta hotspot
-    lda #$0F
-    sta ejectMod
+	lda playerX
+	sta spriteLoc
+	sec
+	sbc #$02
+	sta spriteX
+	sta hotspot
+	lda #$0F
+	sta ejectMod
 
-    lda playerY
-    clc
-    adc #$11
-    sta spriteY
-    jsr compareToBkg
-    lda spriteLoc
-    cmp playerX
-    beq @next
-    sta playerX
-    rts
+	lda playerY
+	clc
+	adc #$11
+	sta spriteY
+	jsr compareToBkg
+	lda spriteLoc
+	cmp playerX
+	beq @next
+	sta playerX
+	rts
 @next
-    lda playerY
-    clc
-    adc #$18
-    sta spriteY
-    jsr compareToBkg
-    lda spriteLoc
-    sta playerX
-    rts
+	lda playerY
+	clc
+	adc #$18
+	sta spriteY
+	jsr compareToBkg
+	lda spriteLoc
+	sta playerX
+	rts
 cpRight:
-    lda rightIsPressed
-    beq checkCollisionDone
+	lda rightIsPressed
+	beq checkCollisionDone
 
-    lda playerX
-    sta spriteLoc
-    clc
-    adc #$07
-    sta spriteX
-    sta hotspot
-    lda #$FF
-    sta ejectMod
+	lda playerX
+	sta spriteLoc
+	clc
+	adc #$08
+	sta spriteX
+	sta hotspot
+	lda #$FF
+	sta ejectMod
 
-    lda playerY
-    clc
-    adc #$11
-    sta spriteY
-    jsr compareToBkg
-    lda spriteLoc
-    cmp playerX
-    beq @next
-    sta playerX
-    rts
+	lda playerY
+	clc
+	adc #$11
+	sta spriteY
+	jsr compareToBkg
+	lda spriteLoc
+	cmp playerX
+	beq @next
+	sta playerX
+	rts
 @next
-    lda playerY
-    clc
-    adc #$18
-    sta spriteY
-    jsr compareToBkg
-    lda spriteLoc
-    sta playerX
+	lda playerY
+	clc
+	adc #$18
+	sta spriteY
+	jsr compareToBkg
+	lda spriteLoc
+	sta playerX
 checkCollisionDone:
-    rts
+	rts
 
 compareToBkg:
-    jsr getBGtype
-    beq compareToBkgDone
+	jsr getBGtype			; A holds BGtype
+	beq compareToBkgDone
 
-    lda hotspot
-    and #$0F
-    eor ejectMod
-    clc
-    adc spriteLoc
-    sta spriteLoc
+	lda hotspot
+	and #$0F
+	eor ejectMod
+	clc
+	adc spriteLoc
+	sta spriteLoc
+	tay
 compareToBkgDone:
-    rts
-
-; compareToBackground:
-;   jsr getBGtype           ; Get current background metatile attribute byte for (spriteY & #$F0) + (spriteX / 16)
-;   bne cpUp                ; If metatile type is passable then return
-;   rts                     ; Else allow the movement into unpassable metatile
-; cpUp:                       ;  then eject the player
-;   lda upIsPressed
-;   beq cpDown
-;   lda spriteY
-;   and #$0F
-;   eor #$0F
-;   clc
-;   adc playerY
-;   sta playerY
-;   rts
-; cpDown:
-;   lda downIsPressed
-;   beq cpLeft
-;   lda spriteY
-;   and #$0F
-;   eor #$FF
-;   clc
-;   adc playerY
-;   sta playerY
-;   rts
-; cpLeft:
-;   lda leftIsPressed
-;   beq cpRight
-;   lda spriteX
-;   and #$0F
-;   eor #$0F
-;   clc
-;   adc playerX
-;   sta playerX
-;     rts
-; cpRight:
-;   lda rightIsPressed
-;   beq compareToBackgroundDone
-;   lda spriteX
-;   and #$0F
-;   eor #$FF
-;   clc
-;   adc playerX
-;   sta playerX
-; compareToBackgroundDone:
-;     rts
+	rts
 
 getBGtype:
     lda spriteX             ; Divides spriteX by 16 so that it corresponds to metatile columns
@@ -288,7 +155,6 @@ getBGtype:
     and #$F0
     clc
     adc spriteXpos
-;    sta spriteYpos
     tay
 
     ldx nametable           ; Load pointers to get correct background
@@ -297,11 +163,9 @@ getBGtype:
     lda bkgH,x
     sta collisionPtr+1
 
-;    ldy spriteYpos
     lda (collisionPtr),y    ; Look up the metatile
     tax
     lda metaAtb,x           ; And use it to look up the metatile attribute
-    sta BGtype              ; Store in BGtype for further use
 getBGtypeDone:
     rts
 
@@ -315,8 +179,6 @@ updateEnemyCol:             ; Updates the enemy bounding boxes for sprite on spr
     sta enemy_BOTTOM
 
     lda enemyRAM+3,x
-;    clc
-;    adc #$02
     sta enemy_LEFT
     clc
     adc enemyBBmodX
@@ -529,15 +391,15 @@ enemyCollision:
    bcc @noHit
 
 @hit:
-    ldx enemyNo
+	ldx enemyNo
 
-    lda playerDir
-    cmp #facingUp
-    beq @up
-    cmp #facingDown
-    beq @down
-    cmp #facingLeft
-    beq @left
+	lda playerDir
+	cmp #facingUp
+	beq @up
+	cmp #facingDown
+	beq @down
+	cmp #facingLeft
+	beq @left
 @right
     lda playerX
     sec
@@ -561,7 +423,7 @@ enemyCollision:
     sta enemyX,x
     rts
 @down
-    lda playerY
+	lda playerY
     sec
     sbc #$02
     sta playerY
@@ -572,7 +434,7 @@ enemyCollision:
     sta enemyY,x
     rts
 @up
-    lda playerY
+	lda playerY
     clc
     adc #$02
     sta playerY
@@ -586,8 +448,8 @@ enemyCollisionDone:
     rts
 
 checkEnemies:
-    lda enemyCtr
-    beq checkEnemiesDone
+	lda enemyCtr
+	beq checkEnemiesDone
     lda enemyCtr
     sta enemyNo
 

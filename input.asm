@@ -51,6 +51,14 @@ readB:
     lda oldButtons
     and #%01000000          ; If B button is pressed and was also pressed last frame then we're done
     bne readBdone
+
+    ldx PS
+    inx
+    stx PS
+    cpx #$04
+    bne readBdone
+    ldx #$01
+    stx PS
 readBdone:
     rts
 
@@ -77,7 +85,10 @@ readUp:
     lda #$01
     sta upIsPressed         ; Set upIsPressed flag, animation enable flag, and player direction
     sta animationEnable
-    lda #$FF
+    lda PS
+    eor #$FF
+    clc
+    adc #$01
     sta playerSpeed
     lda #facingUp
     sta playerDir
@@ -125,6 +136,7 @@ readDown:
     lda #$01
     sta downIsPressed       ; Set downIsPressed flag, animationEnable flag, and player direction
     sta animationEnable
+    lda PS
     sta playerSpeed
     lda #facingDown
     sta playerDir
@@ -172,7 +184,10 @@ readLeft:
     lda #$01
     sta leftIsPressed       ; Set leftIsPressed flag, animationEnable flag, and player direction
     sta animationEnable
-    lda #$FF
+    lda PS
+    eor #$FF
+    clc
+    adc #$01
     sta playerSpeed
     lda #facingLeft
     sta playerDir
@@ -217,6 +232,7 @@ readRight:
     lda #$01
     sta rightIsPressed      ; Set rightIsPressed flag, animationEnable flag, and player direction
     sta animationEnable
+    lda PS
     sta playerSpeed
     lda #facingRight
     sta playerDir
