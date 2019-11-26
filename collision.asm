@@ -1,6 +1,111 @@
-checkCollision:
+checkEnemyCol:
+@up
+	lda enemyDir,x
+	and #$08
+	beq @down
+
+	lda enemyY,x
+	sta spriteLoc
+	sta spriteY
+	sta hotspot
+	lda #$0F
+	sta ejectMod
+	
+	lda enemyX,x
+	clc
+	adc temp+1
+	sta spriteX
+
+	stx temp+3
+	jsr compareToBkg
+	ldx temp+3
+	lda spriteLoc
+	sta enemyY,x
+
+@down
+	lda enemyDir,x
+	and #$04
+	beq @left
+
+	lda enemyY,x
+	sta spriteLoc
+	clc
+	adc enemyBBmodY
+	sta spriteY
+	sta hotspot
+	lda #$FF
+	sta ejectMod
+
+	lda enemyX,x
+	clc
+	adc temp+2
+	sta spriteX
+
+	stx temp+3
+	jsr compareToBkg
+	ldx temp+3
+	lda spriteLoc
+	sta enemyY,x
+
+@left
+	lda enemyDir,x
+	and #$02
+	beq @right
+
+	lda enemyX,x
+	sta spriteLoc
+	sta spriteX
+	sta hotspot
+	lda #$0F
+	sta ejectMod
+
+	lda enemyY,x
+	clc
+	adc temp+1
+	sta spriteY
+
+	stx temp+3
+	jsr compareToBkg
+	ldx temp+3
+	lda spriteLoc
+	sta enemyX,x
+
+@right
+	lda enemyDir,x
+	and #$01
+	beq checkEnemyColDone
+
+	lda enemyX,x
+	sta spriteLoc
+	clc
+	adc enemyBBmodX
+	sta spriteX
+	sta hotspot
+	lda #$FF
+	sta ejectMod
+
+	lda enemyY,x
+	clc
+	adc temp+1
+	sta spriteY
+
+	stx temp+3
+	jsr compareToBkg
+	ldx temp+3
+	lda spriteLoc
+	sta enemyX,x
+checkEnemyColDone:
+	rts
+
+
+checkPlayerCol:
+	lda buttons
+	and #$0F
+	bne cpUp
+	rts
 cpUp:
-	lda upIsPressed
+	lda playerDir
+	and #$08
 	beq cpDown
 
 	lda playerY
@@ -32,7 +137,8 @@ cpUp:
 	sta playerY
 	rts
 cpDown:
-	lda downIsPressed
+	lda playerDir
+	and #$04
 	beq cpLeft
 
 	lda playerY
@@ -64,7 +170,8 @@ cpDown:
 	sta playerY
 	rts
 cpLeft:
-	lda leftIsPressed
+	lda playerDir
+	and #$02
 	beq cpRight
 
 	lda playerX
@@ -96,8 +203,9 @@ cpLeft:
 	sta playerX
 	rts
 cpRight:
-	lda rightIsPressed
-	beq checkCollisionDone
+	lda playerDir
+	and #$01
+	beq checkPlayerColDone
 
 	lda playerX
 	sta spriteLoc
@@ -126,7 +234,7 @@ cpRight:
 	jsr compareToBkg
 	lda spriteLoc
 	sta playerX
-checkCollisionDone:
+checkPlayerColDone:
 	rts
 
 compareToBkg:
@@ -139,7 +247,6 @@ compareToBkg:
 	clc
 	adc spriteLoc
 	sta spriteLoc
-	tay
 compareToBkgDone:
 	rts
 
@@ -393,7 +500,7 @@ enemyCollision:
 @hit:
 	ldx enemyNo
 
-	lda playerDir
+	lda enemyDir,x
 	cmp #facingUp
 	beq @up
 	cmp #facingDown
@@ -402,27 +509,38 @@ enemyCollision:
 	beq @left
 @right
     lda playerX
-    sec
-    sbc #$02
+    clc
+    adc #$02
     sta playerX
 
     lda enemyX,x
-    clc
-    adc #$04
+    sec
+    sbc #$04
     sta enemyX,x
     rts
 @left
     lda playerX
-    clc
-    adc #$02
+    sec
+    sbc #$02
     sta playerX
 
     lda enemyX,x
-    sec
-    sbc #$04
+    clc
+    adc #$04
     sta enemyX,x
     rts
 @down
+	lda playerY
+    clc
+    adc #$02
+    sta playerY
+
+    lda enemyY,x
+    sec
+    sbc #$04
+    sta enemyY,x
+    rts
+@up
 	lda playerY
     sec
     sbc #$02
@@ -431,17 +549,6 @@ enemyCollision:
     lda enemyY,x
     clc
     adc #$04
-    sta enemyY,x
-    rts
-@up
-	lda playerY
-    clc
-    adc #$02
-    sta playerY
-
-    lda enemyY,x
-    sec
-    sbc #$04
     sta enemyY,x
 @noHit:
 enemyCollisionDone:

@@ -1,7 +1,8 @@
 enemyLogic:
     lda enemyFlagsTemp
-    beq enemyLogicDone
-
+    bne @next
+    rts
+@next
     lda enemySpeed+1
     clc
     adc #$20
@@ -9,9 +10,18 @@ enemyLogic:
     lda #$00
     adc #$00
     sta temp
+    
+    lda enemyBBmodY
+	lsr
+	sta temp+1
+	lda enemyBBmodX
+	lsr
+	sta temp+2
 
     ldx enemyCtr                ; First need to calculate all of enemies next movements
-vertical:                   ;  then update their individual enemyY and enemyX vars
+vertical:                       ;  then update their individual enemyY and enemyX vars
+	lda #$00
+	sta enemyDir,x              ; Clear enemyDir
     lda enemyY,x
     sec
     sbc enemyBBmodY
@@ -22,11 +32,17 @@ vertical:                   ;  then update their individual enemyY and enemyX va
     lda enemyY,x
     sbc temp
     sta enemyY,x
+    lda enemyDir,x
+    ora #facingUp
+    sta enemyDir,x
     jmp horizontal
 @down
     lda enemyY,x
     adc temp
     sta enemyY,x
+    lda enemyDir,x
+    ora #facingDown
+    sta enemyDir,x
 
 horizontal:
     lda enemyX,x
@@ -37,13 +53,20 @@ horizontal:
     lda enemyX,x
     sbc temp
     sta enemyX,x
+    lda enemyDir,x
+    ora #facingLeft
+    sta enemyDir,x
     jmp @next
 @right
     lda enemyX,x
     adc temp
     sta enemyX,x
+    lda enemyDir,x
+    ora #facingRight
+    sta enemyDir,x
 
 @next
+	jsr checkEnemyCol
     dex
     bpl vertical
 enemyLogicDone:

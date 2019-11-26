@@ -120,7 +120,7 @@ stringCtr       .dsb 1
 lineNo          .dsb 1
 textAddrL       .dsb 1
 textAddrH       .dsb 1
-temp            .dsb 2
+temp            .dsb 4
 
     .enum $04C0
 
@@ -135,8 +135,8 @@ enemy_RIGHT     .dsb 1
 enemySpeed      .dsb 3
 enemyNo         .dsb 1
 enemyCtr        .dsb 1
-enemyBBmodX     .dsb 1
-enemyBBmodY     .dsb 1
+enemyBBmodX     .dsb 8
+enemyBBmodY     .dsb 8
 
     .ende
 
