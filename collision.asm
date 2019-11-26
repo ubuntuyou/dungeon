@@ -1,140 +1,280 @@
+; checkCollision:
+; up:
+;     lda upIsPressed         ; Checks player's hotspots for collision with background.
+;     beq down                ; Called in the moveUp, moveDown, moveLeft, moveRight routines.
+;     lda playerY             ; Adds/subtracts a specific amount to playerX/Y
+;     clc                     ;  so that instead of basing collision off of the player's top left corner
+;     adc #$10                ;  it can check various points around the sprite similar to a bounding box.
+;     sta spriteY
+;     lda playerX
+;     sec
+;     sbc #$02
+;     sta spriteX
+;     jsr compareToBackground
+; 
+;     lda playerY
+;     clc
+;     adc #$10
+;     sta spriteY
+;     lda playerX
+;     clc
+;     adc #$07
+;     sta spriteX
+;     jmp compareToBackground
+; down:
+;     lda downIsPressed
+;     beq left
+;     lda playerY
+;     clc
+;     adc #$18
+;     sta spriteY
+;     lda playerX
+;     sec
+;     sbc #$02
+;     sta spriteX
+;     jsr compareToBackground
+; 
+;     lda playerY
+;     clc
+;     adc #$18
+;     sta spriteY
+;     lda playerX
+;     clc
+;     adc #$07
+;     sta spriteX
+;     jmp compareToBackground
+; left:
+;     lda leftIsPressed
+;     beq right
+;     lda playerY
+;     clc
+;     adc #$11
+;     sta spriteY
+;     lda playerX
+;     sec
+;     sbc #$03
+;     sta spriteX
+;     jsr compareToBackground
+; 
+;     lda playerY
+;     clc
+;     adc #$18
+;     sta spriteY
+;     lda playerX
+;     sec
+;     sbc #$03
+;     sta spriteX
+;     jmp compareToBackground
+; right:
+;     lda rightIsPressed
+;     beq checkCollisionDone
+;     lda playerY
+;     clc
+;     adc #$11
+;     sta spriteY
+;     lda playerX
+;     clc
+;     adc #$08
+;     sta spriteX
+;     jsr compareToBackground
+; 
+;     lda playerY
+;     clc
+;     adc #$18
+;     sta spriteY
+;     lda playerX
+;     clc
+;     adc #$08
+;     sta spriteX
+;     jmp compareToBackground
+; checkCollisionDone:
+;     rts
+
 checkCollision:
-up:
-    lda upIsPressed         ; Checks player's hotspots for collision with background.
-    beq down                ; Called in the moveUp, moveDown, moveLeft, moveRight routines.
-    lda playerY             ; Adds/subtracts a specific amount to playerX/Y
-    clc                     ;  so that instead of basing collision off of the player's top left corner
-    adc #$10                ;  it can check various points around the sprite similar to a bounding box.
-    sta spriteY
-    lda playerX
-    sec
-    sbc #$02
-    sta spriteX
-    jsr compareToBackground
+cpUp:
+	lda upIsPressed
+	beq cpDown
 
-    lda playerY
-    clc
-    adc #$10
-    sta spriteY
-    lda playerX
-    clc
-    adc #$07
-    sta spriteX
-    jmp compareToBackground
-down:
-    lda downIsPressed
-    beq left
-    lda playerY
-    clc
-    adc #$18
-    sta spriteY
-    lda playerX
-    sec
-    sbc #$02
-    sta spriteX
-    jsr compareToBackground
-
-    lda playerY
-    clc
-    adc #$18
-    sta spriteY
-    lda playerX
-    clc
-    adc #$07
-    sta spriteX
-    jmp compareToBackground
-left:
-    lda leftIsPressed
-    beq right
-    lda playerY
-    clc
-    adc #$11
-    sta spriteY
-    lda playerX
-    sec
-    sbc #$03
-    sta spriteX
-    jsr compareToBackground
-
-    lda playerY
-    clc
-    adc #$18
-    sta spriteY
-    lda playerX
-    sec
-    sbc #$03
-    sta spriteX
-    jmp compareToBackground
-right:
-    lda rightIsPressed
-    beq checkCollisionDone
-    lda playerY
-    clc
-    adc #$11
-    sta spriteY
-    lda playerX
-    clc
-    adc #$08
-    sta spriteX
-    jsr compareToBackground
-
-    lda playerY
-    clc
-    adc #$18
-    sta spriteY
-    lda playerX
-    clc
-    adc #$08
-    sta spriteX
-    jmp compareToBackground
-checkCollisionDone:
-    rts
-
-compareToBackground:
-    jsr getBGtype           ; Get current background metatile attribute byte for (spriteY & #$F0) + (spriteX / 16)
-    bne cpUp                ; If metatile type is passable then return
-    rts                     ; Else allow the movement into unpassable metatile
-cpUp:                       ;  then eject the player
-    lda upIsPressed
-    beq cpDown
-	lda spriteY
-	and #$0F
-	eor #$0F
+	lda playerY
+	sta spriteLoc
 	clc
-	adc playerY
+	adc #$10
+	sta spriteY
+	sta hotspot
+	lda #$0F
+	sta ejectMod
+
+	lda playerX
+	sta spriteX
+	jsr compareToBkg
+	lda spriteLoc
+	cmp playerY
+	beq @next
+	sta playerY
+	rts
+@next
+	lda playerX
+	clc
+	adc #$07
+	sta spriteX
+	jsr compareToBkg
+	lda spriteLoc
 	sta playerY
 	rts
 cpDown:
-    lda downIsPressed
-    beq cpLeft
-	lda spriteY
-	and #$0F
-	eor #$FF
+	lda downIsPressed
+	beq cpLeft
+
+	lda playerY
+	sta spriteLoc
 	clc
-	adc playerY
+	adc #$18
+	sta spriteY
+	sta hotspot
+	lda #$FF
+	sta ejectMod
+
+	lda playerX
+	sta spriteX
+	jsr compareToBkg
+	lda spriteLoc
+	cmp playerY
+	beq @next
+	sta playerY
+	rts
+@next
+	lda playerX
+	clc
+	adc #$07
+	sta spriteX
+	jsr compareToBkg
+	lda spriteLoc
 	sta playerY
 	rts
 cpLeft:
-    lda leftIsPressed
-    beq cpRight
-	lda spriteX
-	and #$0F
-	eor #$0F
+	lda leftIsPressed
+	beq cpRight
+
+	lda playerX
+	sta spriteLoc
+	sec
+	sbc #$01
+	sta spriteX
+	sta hotspot
+	lda #$0F
+	sta ejectMod
+
+	lda playerY
 	clc
-	adc playerX
+	adc #$11
+	sta spriteY
+	jsr compareToBkg
+	lda spriteLoc
+	cmp playerX
+	beq @next
 	sta playerX
-    rts
+	rts
+@next
+	lda playerY
+	clc
+	adc #$18
+	sta spriteY
+	jsr compareToBkg
+	lda spriteLoc
+	sta playerX
+	rts
 cpRight:
-    lda rightIsPressed
-    beq compareToBackgroundDone
-	lda spriteX
-	and #$0F
-	eor #$FF
+	lda rightIsPressed
+	beq checkCollisionDone
+
+	lda playerX
+	sta spriteLoc
 	clc
-	adc playerX
+	adc #$07
+	sta spriteX
+	sta hotspot
+	lda #$FF
+	sta ejectMod
+
+	lda playerY
+	clc
+	adc #$11
+	sta spriteY
+	jsr compareToBkg
+	lda spriteLoc
+	cmp playerX
+	beq @next
 	sta playerX
-compareToBackgroundDone:
-    rts
+	rts
+@next
+	lda playerY
+	clc
+	adc #$18
+	sta spriteY
+	jsr compareToBkg
+	lda spriteLoc
+	sta playerX
+checkCollisionDone:
+	rts
+
+compareToBkg:
+	jsr getBGtype
+	beq compareToBkgDone
+
+	lda hotspot
+	and #$0F
+	eor ejectMod
+	clc
+	adc spriteLoc
+	sta spriteLoc
+compareToBkgDone:
+	rts
+
+; compareToBackground:
+;   jsr getBGtype           ; Get current background metatile attribute byte for (spriteY & #$F0) + (spriteX / 16)
+;   bne cpUp                ; If metatile type is passable then return
+;   rts                     ; Else allow the movement into unpassable metatile
+; cpUp:                       ;  then eject the player
+;   lda upIsPressed
+;   beq cpDown
+; 	lda spriteY
+; 	and #$0F
+; 	eor #$0F
+; 	clc
+; 	adc playerY
+; 	sta playerY
+; 	rts
+; cpDown:
+;   lda downIsPressed
+;   beq cpLeft
+; 	lda spriteY
+; 	and #$0F
+; 	eor #$FF
+; 	clc
+; 	adc playerY
+; 	sta playerY
+; 	rts
+; cpLeft:
+;   lda leftIsPressed
+;   beq cpRight
+; 	lda spriteX
+; 	and #$0F
+; 	eor #$0F
+; 	clc
+; 	adc playerX
+; 	sta playerX
+;     rts
+; cpRight:
+;   lda rightIsPressed
+;   beq compareToBackgroundDone
+; 	lda spriteX
+; 	and #$0F
+; 	eor #$FF
+; 	clc
+; 	adc playerX
+; 	sta playerX
+; compareToBackgroundDone:
+;     rts
 
 getBGtype:
     lda spriteX             ; Divides spriteX by 16 so that it corresponds to metatile columns

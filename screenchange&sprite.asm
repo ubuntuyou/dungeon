@@ -78,8 +78,6 @@ player_RIGHT    .dsb 1
 spriteX         .dsb 1
 spriteY         .dsb 1
 spriteXpos      .dsb 1
-spriteSide		.dsb 1
-spriteLoc		.dsb 1
 
 	.enum $0090
 
@@ -96,6 +94,9 @@ itemStrAddr     .dsb 1
 	.enum $00A0
 
 BGtype          .dsb 1
+spriteLoc		.dsb 1
+hotspot			.dsb 1
+ejectMod		.dsb 1
 
 itemFlagsTemp   .dsb 1
 enemyFlagsTemp  .dsb 1
