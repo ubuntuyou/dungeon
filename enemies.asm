@@ -134,33 +134,33 @@ loadEnemyHeaders:
 loadEnemyCoords:
     ldx enemyCtr
 @loop
-	jsr random
+    jsr random
     tay
-	lda (screenPtr),y
-	tay
-	lda metaAtb,y
-	bne @loop
+    lda (screenPtr),y
+    tay
+    lda metaAtb,y
+    bne @loop
 
-	lda RNG
-	tay
+    lda RNG
+    tay
 
-	asl
-	asl
-	asl
-	asl
-	sta enemyX-1,x
-	tya
-	and #$F0
-	sta enemyY-1,x
-	dex
-	bne @loop
+    asl
+    asl
+    asl
+    asl
+    sta enemyX-1,x
+    tya
+    and #$F0
+    sta enemyY-1,x
+    dex
+    bne @loop
 
 loadEnemyDefs:
     lda enemyCtr
     sta temp                ; Initialize temp to #$FF so that first loop sets it to #$00
     ldx #$00
 @loop
-	sty temp+1
+    sty temp+1
     ldy temp
     dey
     bmi loadEnemyBB         ; If temp == #$FF then we're done here
@@ -186,13 +186,13 @@ loadEnemyDefs:
     bne @loop1              ; Always branch
 
 loadEnemyBB:
-	ldy temp+1
-	iny
-	lda (enemyDefPtr),y
-	sta enemyBBmodY
-	iny
-	lda (enemyDefPtr),y
-	sta enemyBBmodX
+    ldy temp+1
+    iny
+    lda (enemyDefPtr),y
+    sta enemyBBmodY
+    iny
+    lda (enemyDefPtr),y
+    sta enemyBBmodX
 loadEnemiesDone:
     rts
 

@@ -92,143 +92,143 @@
 
 checkCollision:
 cpUp:
-	lda upIsPressed
-	beq cpDown
+    lda upIsPressed
+    beq cpDown
 
-	lda playerY
-	sta spriteLoc
-	clc
-	adc #$10
-	sta spriteY
-	sta hotspot
-	lda #$0F
-	sta ejectMod
+    lda playerY
+    sta spriteLoc
+    clc
+    adc #$10
+    sta spriteY
+    sta hotspot
+    lda #$0F
+    sta ejectMod
 
-	lda playerX
-	sta spriteX
-	jsr compareToBkg
-	lda spriteLoc
-	cmp playerY
-	beq @next
-	sta playerY
-	rts
+    lda playerX
+    sta spriteX
+    jsr compareToBkg
+    lda spriteLoc
+    cmp playerY
+    beq @next
+    sta playerY
+    rts
 @next
-	lda playerX
-	clc
-	adc #$07
-	sta spriteX
-	jsr compareToBkg
-	lda spriteLoc
-	sta playerY
-	rts
+    lda playerX
+    clc
+    adc #$07
+    sta spriteX
+    jsr compareToBkg
+    lda spriteLoc
+    sta playerY
+    rts
 cpDown:
-	lda downIsPressed
-	beq cpLeft
+    lda downIsPressed
+    beq cpLeft
 
-	lda playerY
-	sta spriteLoc
-	clc
-	adc #$18
-	sta spriteY
-	sta hotspot
-	lda #$FF
-	sta ejectMod
+    lda playerY
+    sta spriteLoc
+    clc
+    adc #$18
+    sta spriteY
+    sta hotspot
+    lda #$FF
+    sta ejectMod
 
-	lda playerX
-	sta spriteX
-	jsr compareToBkg
-	lda spriteLoc
-	cmp playerY
-	beq @next
-	sta playerY
-	rts
+    lda playerX
+    sta spriteX
+    jsr compareToBkg
+    lda spriteLoc
+    cmp playerY
+    beq @next
+    sta playerY
+    rts
 @next
-	lda playerX
-	clc
-	adc #$07
-	sta spriteX
-	jsr compareToBkg
-	lda spriteLoc
-	sta playerY
-	rts
+    lda playerX
+    clc
+    adc #$07
+    sta spriteX
+    jsr compareToBkg
+    lda spriteLoc
+    sta playerY
+    rts
 cpLeft:
-	lda leftIsPressed
-	beq cpRight
+    lda leftIsPressed
+    beq cpRight
 
-	lda playerX
-	sta spriteLoc
-	sec
-	sbc #$01
-	sta spriteX
-	sta hotspot
-	lda #$0F
-	sta ejectMod
+    lda playerX
+    sta spriteLoc
+    sec
+    sbc #$01
+    sta spriteX
+    sta hotspot
+    lda #$0F
+    sta ejectMod
 
-	lda playerY
-	clc
-	adc #$11
-	sta spriteY
-	jsr compareToBkg
-	lda spriteLoc
-	cmp playerX
-	beq @next
-	sta playerX
-	rts
+    lda playerY
+    clc
+    adc #$11
+    sta spriteY
+    jsr compareToBkg
+    lda spriteLoc
+    cmp playerX
+    beq @next
+    sta playerX
+    rts
 @next
-	lda playerY
-	clc
-	adc #$18
-	sta spriteY
-	jsr compareToBkg
-	lda spriteLoc
-	sta playerX
-	rts
+    lda playerY
+    clc
+    adc #$18
+    sta spriteY
+    jsr compareToBkg
+    lda spriteLoc
+    sta playerX
+    rts
 cpRight:
-	lda rightIsPressed
-	beq checkCollisionDone
+    lda rightIsPressed
+    beq checkCollisionDone
 
-	lda playerX
-	sta spriteLoc
-	clc
-	adc #$07
-	sta spriteX
-	sta hotspot
-	lda #$FF
-	sta ejectMod
+    lda playerX
+    sta spriteLoc
+    clc
+    adc #$07
+    sta spriteX
+    sta hotspot
+    lda #$FF
+    sta ejectMod
 
-	lda playerY
-	clc
-	adc #$11
-	sta spriteY
-	jsr compareToBkg
-	lda spriteLoc
-	cmp playerX
-	beq @next
-	sta playerX
-	rts
+    lda playerY
+    clc
+    adc #$11
+    sta spriteY
+    jsr compareToBkg
+    lda spriteLoc
+    cmp playerX
+    beq @next
+    sta playerX
+    rts
 @next
-	lda playerY
-	clc
-	adc #$18
-	sta spriteY
-	jsr compareToBkg
-	lda spriteLoc
-	sta playerX
+    lda playerY
+    clc
+    adc #$18
+    sta spriteY
+    jsr compareToBkg
+    lda spriteLoc
+    sta playerX
 checkCollisionDone:
-	rts
+    rts
 
 compareToBkg:
-	jsr getBGtype
-	beq compareToBkgDone
+    jsr getBGtype
+    beq compareToBkgDone
 
-	lda hotspot
-	and #$0F
-	eor ejectMod
-	clc
-	adc spriteLoc
-	sta spriteLoc
+    lda hotspot
+    and #$0F
+    eor ejectMod
+    clc
+    adc spriteLoc
+    sta spriteLoc
 compareToBkgDone:
-	rts
+    rts
 
 ; compareToBackground:
 ;   jsr getBGtype           ; Get current background metatile attribute byte for (spriteY & #$F0) + (spriteX / 16)
@@ -237,42 +237,42 @@ compareToBkgDone:
 ; cpUp:                       ;  then eject the player
 ;   lda upIsPressed
 ;   beq cpDown
-; 	lda spriteY
-; 	and #$0F
-; 	eor #$0F
-; 	clc
-; 	adc playerY
-; 	sta playerY
-; 	rts
+;   lda spriteY
+;   and #$0F
+;   eor #$0F
+;   clc
+;   adc playerY
+;   sta playerY
+;   rts
 ; cpDown:
 ;   lda downIsPressed
 ;   beq cpLeft
-; 	lda spriteY
-; 	and #$0F
-; 	eor #$FF
-; 	clc
-; 	adc playerY
-; 	sta playerY
-; 	rts
+;   lda spriteY
+;   and #$0F
+;   eor #$FF
+;   clc
+;   adc playerY
+;   sta playerY
+;   rts
 ; cpLeft:
 ;   lda leftIsPressed
 ;   beq cpRight
-; 	lda spriteX
-; 	and #$0F
-; 	eor #$0F
-; 	clc
-; 	adc playerX
-; 	sta playerX
+;   lda spriteX
+;   and #$0F
+;   eor #$0F
+;   clc
+;   adc playerX
+;   sta playerX
 ;     rts
 ; cpRight:
 ;   lda rightIsPressed
 ;   beq compareToBackgroundDone
-; 	lda spriteX
-; 	and #$0F
-; 	eor #$FF
-; 	clc
-; 	adc playerX
-; 	sta playerX
+;   lda spriteX
+;   and #$0F
+;   eor #$FF
+;   clc
+;   adc playerX
+;   sta playerX
 ; compareToBackgroundDone:
 ;     rts
 
@@ -529,15 +529,15 @@ enemyCollision:
    bcc @noHit
 
 @hit:
-	ldx enemyNo
+    ldx enemyNo
 
-	lda playerDir
-	cmp #facingUp
-	beq @up
-	cmp #facingDown
-	beq @down
-	cmp #facingLeft
-	beq @left
+    lda playerDir
+    cmp #facingUp
+    beq @up
+    cmp #facingDown
+    beq @down
+    cmp #facingLeft
+    beq @left
 @right
     lda playerX
     sec
@@ -561,7 +561,7 @@ enemyCollision:
     sta enemyX,x
     rts
 @down
-	lda playerY
+    lda playerY
     sec
     sbc #$02
     sta playerY
@@ -572,7 +572,7 @@ enemyCollision:
     sta enemyY,x
     rts
 @up
-	lda playerY
+    lda playerY
     clc
     adc #$02
     sta playerY
@@ -586,8 +586,8 @@ enemyCollisionDone:
     rts
 
 checkEnemies:
-	lda enemyCtr
-	beq checkEnemiesDone
+    lda enemyCtr
+    beq checkEnemiesDone
     lda enemyCtr
     sta enemyNo
 

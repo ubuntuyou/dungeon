@@ -27,14 +27,14 @@ textBoxPtr      .dsb 2
 enemyPtr        .dsb 2
 enemyDefPtr     .dsb 2
 
-	.enum $0040
+    .enum $0040
 gameState       .dsb 1
 softPPU_Control .dsb 1
 softPPU_Mask    .dsb 1
 prgNo           .dsb 1
 prgNoOld        .dsb 1
 
-	.enum $0050
+    .enum $0050
 
 metaTile        .dsb 1
 rowCounter      .dsb 1
@@ -43,7 +43,7 @@ nametable       .dsb 1
 needDraw        .dsb 1
 needItems       .dsb 1
 
-	.enum $0060
+    .enum $0060
 hrs             .dsb 1
 mins            .dsb 1
 secs            .dsb 1
@@ -51,10 +51,10 @@ tick            .dsb 1
 
 sleeping        .dsb 1
 
-RNG				.dsb 1
-RNGseed			.dsb 1
+RNG             .dsb 1
+RNGseed         .dsb 1
 
-	.enum $0070
+    .enum $0070
 
 buttons         .dsb 1
 oldButtons      .dsb 1
@@ -64,7 +64,7 @@ downIsPressed   .dsb 1
 leftIsPressed   .dsb 1
 rightIsPressed  .dsb 1
 
-	.enum $0080
+    .enum $0080
 
 playerDir       .dsb 1
 playerDirOld    .dsb 1
@@ -79,7 +79,7 @@ spriteX         .dsb 1
 spriteY         .dsb 1
 spriteXpos      .dsb 1
 
-	.enum $0090
+    .enum $0090
 
 item_TOP        .dsb 1
 item_BOTTOM     .dsb 1
@@ -91,12 +91,12 @@ itemNo          .dsb 1
 itemHdrNo       .dsb 1
 itemStrAddr     .dsb 1
 
-	.enum $00A0
+    .enum $00A0
 
 BGtype          .dsb 1
-spriteLoc		.dsb 1
-hotspot			.dsb 1
-ejectMod		.dsb 1
+spriteLoc       .dsb 1
+hotspot         .dsb 1
+ejectMod        .dsb 1
 
 itemFlagsTemp   .dsb 1
 enemyFlagsTemp  .dsb 1
@@ -105,7 +105,7 @@ frameCounter    .dsb 2
 animationNumber .dsb 1
 animConstNumber .dsb 3
 
-	.enum $00B0
+    .enum $00B0
 
 textCounter     .dsb 1
 needTextAttrib  .dsb 1
@@ -126,7 +126,7 @@ temp            .dsb 2
 enemyIndex      .dsb 8
 enemyY          .dsb 8
 enemyX          .dsb 8
-enemyDir		.dsb 8
+enemyDir        .dsb 8
 enemy_TOP       .dsb 1
 enemy_BOTTOM    .dsb 1
 enemy_LEFT      .dsb 1
@@ -1183,47 +1183,47 @@ setMapperPRGdone:
     rts
 
 random:
-	lda RNG
-	asl A
-	asl A
-	clc
-	adc RNG
-	clc
-	adc RNGseed
-	sta RNG
-	
-	tay
-	and #$F0
-	cmp #$40
-	bcc random
-	cmp #$B0
-	bcs random
+    lda RNG
+    asl A
+    asl A
+    clc
+    adc RNG
+    clc
+    adc RNGseed
+    sta RNG
+    
+    tay
+    and #$F0
+    cmp #$40
+    bcc random
+    cmp #$B0
+    bcs random
 
-	tya
-	and #$0F
-	cmp #$04
-	bcc random
-	cmp #$0C
-	bcs random
+    tya
+    and #$0F
+    cmp #$04
+    bcc random
+    cmp #$0C
+    bcs random
 
-	tya
+    tya
 randomDone:
-	rts
-	
+    rts
+    
 waitForInput:
-	lda RNGseed
-	cmp #$FF
-	bne waitForInputDone
+    lda RNGseed
+    cmp #$FF
+    bne waitForInputDone
 
-	inc tick
-	jsr latchController
-	lda buttons
-	beq waitForInputDone
-	lda tick
-	ora #$01
-	sta RNGseed
+    inc tick
+    jsr latchController
+    lda buttons
+    beq waitForInputDone
+    lda tick
+    ora #$01
+    sta RNGseed
 waitForInputDone:
-	rts
+    rts
 
     
 ;;;;;;;;;;;;;;;;;;;;
@@ -1270,7 +1270,7 @@ mainIndirectDone:
     rts
 
 playingMAIN:
-	jsr waitForInput
+    jsr waitForInput
 
 updateLoc:
     lda playerDir
