@@ -120,9 +120,6 @@ drawBkg:
 drawBkgDone:
     rts
 
-;   TODO: Convert chest sprites to backgroung tiles
-;         Use system similar to loadItems to load enemies
-
 loadItems:
     ldy #$00                  ; Loads item sprites to sprite ram
 itemLoop:
@@ -174,14 +171,6 @@ loadFlags:                  ; Loads itemFlags to RAM so they can be read and mod
     inx
     cpx #$40
     bne @loop
-
-;    ldx #$00
-;@loop2
-;    lda enemyFlags,x
-;    sta enemySoftFlags,x
-;    inx
-;    cpx #$40
-;    bne @loop2
 loadFlagsDone:
     rts
 

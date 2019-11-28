@@ -30,6 +30,7 @@ vertical:                       ;  then update their individual enemyY and enemy
     bcc @down
 @up
     lda enemyY,x
+    sec
     sbc temp
     sta enemyY,x
     lda enemyDir,x
@@ -38,6 +39,7 @@ vertical:                       ;  then update their individual enemyY and enemy
     jmp horizontal
 @down
     lda enemyY,x
+    clc
     adc temp
     sta enemyY,x
     lda enemyDir,x
@@ -51,6 +53,7 @@ horizontal:
     bcc @right
 @left
     lda enemyX,x
+    sec
     sbc temp
     sta enemyX,x
     lda enemyDir,x
@@ -59,6 +62,7 @@ horizontal:
     jmp @next
 @right
     lda enemyX,x
+    clc
     adc temp
     sta enemyX,x
     lda enemyDir,x
@@ -225,9 +229,9 @@ enemyDefsH:
     .dh slime, eBubble
 
 slime:
-    .db $35,%00000011,$35,%01000011,$FF,$07,$0F
+    .db $35,%00000011,$35,%01000011,$FF,$08,$0E
 eBubble
-    .db $40,%00000010,$FF,$07,$07
+    .db $40,%00000010,$FF,$08,$08
 
 enemyHeadersL:
     .dl enemyHeader00, enemyHeader01, enemyHeader02, enemyHeader03, enemyHeader04

@@ -10,17 +10,7 @@ checkEnemyCol:
 	sta hotspot
 	lda #$0F
 	sta ejectMod
-	
-	lda enemyX,x
-	clc
-	adc temp+1
-	sta spriteX
-
-	stx temp+3
-	jsr compareToBkg
-	ldx temp+3
-	lda spriteLoc
-	sta enemyY,x
+	bne @cmpV
 
 @down
 	lda enemyDir,x
@@ -36,6 +26,7 @@ checkEnemyCol:
 	lda #$FF
 	sta ejectMod
 
+@cmpV
 	lda enemyX,x
 	clc
 	adc temp+2
@@ -58,17 +49,7 @@ checkEnemyCol:
 	sta hotspot
 	lda #$0F
 	sta ejectMod
-
-	lda enemyY,x
-	clc
-	adc temp+1
-	sta spriteY
-
-	stx temp+3
-	jsr compareToBkg
-	ldx temp+3
-	lda spriteLoc
-	sta enemyX,x
+	bne @cmpH
 
 @right
 	lda enemyDir,x
@@ -84,6 +65,7 @@ checkEnemyCol:
 	lda #$FF
 	sta ejectMod
 
+@cmpH
 	lda enemyY,x
 	clc
 	adc temp+1
