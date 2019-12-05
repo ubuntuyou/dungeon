@@ -1,3 +1,18 @@
+	;;;  00   01   02   03   04   05   06   07   08   09   0A   0B   0C   0D   0E   0F
+	;;;  10   11   12   13   14   15   16   17   18   19   1A   1B   1C   1D
+TL:      
+	.db $05, $0C, $01, $02, $02, $01, $02, $05, $01, $01, $01, $05, $05, $05, $02, $05
+	.db $05, $05, $05, $05, $0C, $03, $02, $05, $01, $01, $01, $02, $01, $02, $0C
+TR:
+	.db $05, $0C, $02, $02, $01, $05, $05, $01, $01, $01, $05, $05, $01, $02, $05, $02
+	.db $05, $05, $05, $05, $03, $0C, $05, $02, $02, $05, $01, $05, $01, $02, $0C
+BL:
+	.db $05, $01, $01, $05, $05, $01, $03, $05, $01, $02, $02, $03, $05, $03, $05, $05
+	.db $01, $05, $03, $05, $0C, $03, $03, $05, $01, $02, $01, $05, $02, $03, $0C
+BR:
+	.db $05, $01, $05, $05, $01, $05, $03, $02, $02, $01, $05, $03, $01, $03, $05, $05
+	.db $05, $01, $05, $03, $0C, $03, $05, $03, $05, $05, $01, $05, $02, $03, $0C
+
 ;;;;;;;;;;;;;;;;;;;;;
 ;;;   METATILES   ;;;
 ;;;;;;;;;;;;;;;;;;;;;
@@ -18,49 +33,192 @@ bottomRight:
 metaAtb:
     .db $01, $01, $01, $01, $00, $00, $00, $00, $01, $01, $01, $01, $00, $01, $00
 
+; metaBackground:
+;     lda #$00
+;     sta metatile
+;     eor #$0F
+;     sta rowCounter
+; @top:
+;     lda #$10
+;     sta counter
+; 
+;     ldy metatile
+; @loop:
+;     lda (screenPtr),y
+;     tax
+;     lda topLeft,x
+;     sta PPU_Data
+;     lda topRight,x
+;     sta PPU_Data
+;     iny
+;     dec counter
+;     bne @loop
+; 
+;     tya
+;     sec
+;     sbc #$10
+;     tay
+; 
+;     lda #$10
+;     sta counter
+; @loop2:
+;     lda (screenPtr),y
+;     tax
+;     lda bottomLeft,x
+;     sta PPU_Data
+;     lda bottomRight,x
+;     sta PPU_Data
+;     lda metaAtb,x
+;     sta colRAM,y
+;     iny
+;     dec counter
+;     bne @loop2
+;     
+;     sty metatile
+; 
+;     dec rowCounter
+;     bne @top
+; metaBackgroundDone:
+;     rts
+
 metaBackground:
     lda #$00
-    sta metaTile
+    sta metatile
+    sta temp+1
     eor #$0F
     sta rowCounter
 @top:
-    lda #$10
+    lda #$08
     sta counter
-
-    ldy metaTile
+    ldy metatile
 @loop:
-    lda (screenPtr),y
+	lda (screenPtr),y
     tax
-    lda topLeft,x
+    stx temp
+    lda TL,x
+    tax
+    lda topLeft,x           ; Load top left tile
     sta PPU_Data
-    lda topRight,x
+    lda topRight,x          ; Load top right tile
     sta PPU_Data
-    iny
-    dec counter
-    bne @loop
+    
+    lda metaAtb,x
+    ldx temp+1
+    inc temp+1
+    sta colRAM,x
 
-    tya
-    sec
-    sbc #$10
-    tay
+	ldx temp
+    lda TR,x	            ; Get meta-metatile again
+    tax
+    lda topLeft,x           ; Load top left tile
+    sta PPU_Data
+    lda topRight,x          ; Load top right tile
+    sta PPU_Data
+    
+    lda metaAtb,x
+    ldx temp+1
+    inc temp+1
+    sta colRAM,x
 
-    lda #$10
+    iny                     ; INY for next meta-metatile
+    dec counter             ;
+    bne @loop               ; If we've done 8 meta-metatiles we're done
+
+    lda #$08
     sta counter
+    ldy metatile
 @loop2:
     lda (screenPtr),y
+    tax
+    stx temp
+    lda TL,x
+	tax
+    lda bottomLeft,x
+    sta PPU_Data
+    lda bottomRight,x
+    sta PPU_Data
+
+    ldx temp
+    lda TR,x
     tax
     lda bottomLeft,x
     sta PPU_Data
     lda bottomRight,x
     sta PPU_Data
+
     iny
     dec counter
     bne @loop2
     
-    sty metaTile
+    dec rowCounter
+    beq metaBackgroundDone
+
+    lda #$08
+    sta counter
+    ldy metatile
+@loop3:
+	lda (screenPtr),y
+    tax
+    stx temp
+    lda BL,x
+    tax
+    lda topLeft,x           ; Load top left tile
+    sta PPU_Data
+    lda topRight,x          ; Load top right tile
+    sta PPU_Data
+    
+    lda metaAtb,x
+    ldx temp+1
+    inc temp+1
+    sta colRAM,x
+
+	ldx temp
+    lda BR,x	            ; Get meta-metatile again
+    tax
+    lda topLeft,x           ; Load top left tile
+    sta PPU_Data
+    lda topRight,x          ; Load top right tile
+    sta PPU_Data
+
+    lda metaAtb,x
+    ldx temp+1
+    inc temp+1
+    sta colRAM,x
+
+    iny                     ; INY for next meta-metatile
+    dec counter             ;
+    bne @loop3              ; If we've done 8 meta-metatiles we're done
+
+    lda #$08
+    sta counter
+    ldy metatile
+@loop4:
+    lda (screenPtr),y
+    tax
+    stx temp
+    lda BL,x
+	tax
+    lda bottomLeft,x
+    sta PPU_Data
+    lda bottomRight,x
+    sta PPU_Data
+
+    ldx temp
+    lda BR,x
+    tax
+    lda bottomLeft,x
+    sta PPU_Data
+    lda bottomRight,x
+    sta PPU_Data
+
+    iny
+    dec counter
+    bne @loop4
+    
+    sty metatile
 
     dec rowCounter
-    bne @top
+    jmp @top
 metaBackgroundDone:
     rts
 

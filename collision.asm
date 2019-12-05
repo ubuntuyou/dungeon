@@ -32,10 +32,8 @@ checkEnemyCol:
 	adc temp+2
 	sta spriteX
 
-	stx temp+3
 	jsr compareToBkg
-	ldx temp+3
-	lda spriteLoc
+	beq @left
 	sta enemyY,x
 
 @left
@@ -71,24 +69,16 @@ checkEnemyCol:
 	adc temp+1
 	sta spriteY
 
-	stx temp+3
 	jsr compareToBkg
-	ldx temp+3
-	lda spriteLoc
+	beq checkEnemyColDone
 	sta enemyX,x
 checkEnemyColDone:
 	rts
 
-
-checkPlayerCol:
-	lda buttons
-	and #$0F
-	bne cpUp
-	rts
-cpUp:
-	lda playerDir
-	and #$08
-	beq cpDown
+checkPlayerColV:
+@up:
+	lda upIsPressed
+	beq @down
 
 	lda playerY
 	sta spriteLoc
@@ -98,31 +88,9 @@ cpUp:
 	sta hotspot
 	lda #$0F
 	sta ejectMod
-
-	lda playerX
-	sec
-	sbc #$01
-	sta spriteX
-	jsr compareToBkg
-	lda spriteLoc
-	cmp playerY
-	beq @next
-	sta playerY
-	rts
-@next
-	lda playerX
-	clc
-	adc #$07
-	sta spriteX
-	jsr compareToBkg
-	lda spriteLoc
-	sta playerY
-	rts
-cpDown:
-	lda playerDir
-	and #$04
-	beq cpLeft
-
+	bne @checkColV
+	
+@down
 	lda playerY
 	sta spriteLoc
 	clc
@@ -132,29 +100,29 @@ cpDown:
 	lda #$FF
 	sta ejectMod
 
+@checkColV
 	lda playerX
 	sec
 	sbc #$01
 	sta spriteX
 	jsr compareToBkg
-	lda spriteLoc
-	cmp playerY
-	beq @next
-	sta playerY
-	rts
-@next
+	bne @eject
+
 	lda playerX
 	clc
 	adc #$07
 	sta spriteX
 	jsr compareToBkg
-	lda spriteLoc
+	beq checkPlayerColVdone
+@eject
 	sta playerY
+checkPlayerColVdone:
 	rts
-cpLeft:
-	lda playerDir
-	and #$02
-	beq cpRight
+
+checkPlayerColH:
+@left
+	lda leftIsPressed
+	beq @right
 
 	lda playerX
 	sta spriteLoc
@@ -164,32 +132,10 @@ cpLeft:
 	sta hotspot
 	lda #$0F
 	sta ejectMod
+	bne @checkColH
 
-	lda playerY
-	clc
-	adc #$11
-	sta spriteY
-	jsr compareToBkg
-	lda spriteLoc
-	cmp playerX
-	beq @next
-	sta playerX
-	rts
-@next
-	lda playerY
-	clc
-	adc #$18
-	sta spriteY
-	jsr compareToBkg
-	lda spriteLoc
-	sta playerX
-	rts
-cpRight:
-	lda playerDir
-	and #$01
-	beq checkPlayerColDone
-
-	lda playerX
+@right
+    lda playerX
 	sta spriteLoc
 	clc
 	adc #$08
@@ -198,41 +144,26 @@ cpRight:
 	lda #$FF
 	sta ejectMod
 
+@checkColH
 	lda playerY
 	clc
 	adc #$11
 	sta spriteY
 	jsr compareToBkg
-	lda spriteLoc
-	cmp playerX
-	beq @next
-	sta playerX
-	rts
-@next
+	bne @eject
+
 	lda playerY
 	clc
 	adc #$18
 	sta spriteY
 	jsr compareToBkg
-	lda spriteLoc
+	beq checkPlayerColHdone
+@eject
 	sta playerX
-checkPlayerColDone:
+checkPlayerColHdone
 	rts
 
 compareToBkg:
-	jsr getBGtype			; A holds BGtype
-	beq compareToBkgDone
-
-	lda hotspot
-	and #$0F
-	eor ejectMod
-	clc
-	adc spriteLoc
-	sta spriteLoc
-compareToBkgDone:
-	rts
-
-getBGtype:
     lda spriteX             ; Divides spriteX by 16 so that it corresponds to metatile columns
     lsr A
     lsr A
@@ -246,17 +177,99 @@ getBGtype:
     adc spriteXpos
     tay
 
-    ldx nametable           ; Load pointers to get correct background
-    lda bkgL,x
-    sta collisionPtr
-    lda bkgH,x
-    sta collisionPtr+1
+    lda colRAM,y    	; Look up the metatile
+;    tay
+;    lda metaAtb,y        	; And use it to look up the metatile attribute
+	beq compareToBkgDone    ; If tile is passable we're done
 
-    lda (collisionPtr),y    ; Look up the metatile
-    tax
-    lda metaAtb,x           ; And use it to look up the metatile attribute
-getBGtypeDone:
-    rts
+	lda hotspot
+	and #$0F
+	eor ejectMod
+	clc
+	adc spriteLoc
+compareToBkgDone:
+	rts
+
+; compareToBkg:
+;     lda spriteX             ; Divides spriteX by 32 so that it corresponds to metatile columns
+; 	lsr
+; 	lsr
+; 	lsr
+; 	lsr
+; 	lsr
+;     sta spriteXpos
+; 
+;     lda spriteY             ; Then add high nybble of spriteY to correspond to metatile rows
+;     and #$E0
+;     lsr
+;     lsr
+; 	clc
+; 	adc spriteXpos
+;     tay
+;     lda (screenPtr),y       ; Look up the metatile
+;     tay
+; 
+;     lda spriteY
+;     and #$10
+;     beq @bottom
+; @top
+; 	lda spriteX
+; 	and #$10
+; 	beq @TR
+; @TL
+; 	lda TL,y
+; 	tay
+; 	lda metaAtb,y
+; 	beq compareToBkgDone    ; If tile is passable we're done
+; 
+; 	lda hotspot
+; 	and #$0F
+; 	eor ejectMod
+; 	clc
+; 	adc spriteLoc
+; 	rts
+; @TR
+; 	lda TR,y
+; 	tay
+; 	lda metaAtb,y
+; 	beq compareToBkgDone    ; If tile is passable we're done
+; 
+; 	lda hotspot
+; 	and #$0F
+; 	eor ejectMod
+; 	clc
+; 	adc spriteLoc
+; 	rts
+; 
+; @bottom
+; 	lda spriteX
+; 	and #$10
+; 	bne @BR
+; @BL
+; 	lda BL,y
+; 	tay
+; 	lda metaAtb,y
+; 	beq compareToBkgDone    ; If tile is passable we're done
+; 
+; 	lda hotspot
+; 	and #$0F
+; 	eor ejectMod
+; 	clc
+; 	adc spriteLoc
+; 	rts
+; @BR
+; 	lda BR,y
+; 	tay
+; 	lda metaAtb,y
+; 	bne compareToBkgDone    ; If tile is passable we're done
+; 
+; 	lda hotspot
+; 	and #$0F
+; 	eor ejectMod
+; 	clc
+; 	adc spriteLoc
+; compareToBkgDone:
+;     rts
 
 updateEnemyCol:             ; Updates the enemy bounding boxes for sprite on sprite collision
     lda enemyIndex,x

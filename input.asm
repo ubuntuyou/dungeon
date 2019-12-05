@@ -271,7 +271,7 @@ moveV:
     adc playerSpeed
     sta playerY
 
-    jsr checkPlayerCol      ; Check for collision with background
+    jsr checkPlayerColV     ; Check for collision with background
     lda #$00
     sta upIsPressed         ; And clear upIsPressed flag
     sta downIsPressed
@@ -295,7 +295,7 @@ moveH:
     adc playerSpeed
     sta playerX
 
-    jsr checkPlayerCol      ; Check for collision with background
+    jsr checkPlayerColH     ; Check for collision with background
     lda #$00
     sta leftIsPressed       ; And clear leftIsPressed flag
     sta rightIsPressed

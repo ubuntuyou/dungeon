@@ -36,10 +36,12 @@ prgNoOld        .dsb 1
 
     .enum $0050
 
-metaTile        .dsb 1
+metatile        .dsb 1
 rowCounter      .dsb 1
 counter         .dsb 1
 nametable       .dsb 1
+nametableL		.dsb 1
+nametableH		.dsb 1
 needDraw        .dsb 1
 needItems       .dsb 1
 
@@ -78,6 +80,7 @@ player_RIGHT    .dsb 1
 spriteX         .dsb 1
 spriteY         .dsb 1
 spriteXpos      .dsb 1
+spriteYpos		.dsb 1
 PS				.dsb 1
 
     .enum $0090
@@ -164,6 +167,7 @@ MAP_PRG         .equ $E000
 spriteRAM       .equ $0204
 itemRAM         .equ $0220
 enemyRAM        .equ $0260
+colRAM			.equ $0700
 itemSoftFlags   .equ $6000
 enemySoftFlags  .equ $6100
 bkgBuffer       .equ $6200
@@ -393,7 +397,7 @@ loadNametableDone:
     lda #$0C
     sta hrs
 
-    lda #$7C
+    lda #$60
     sta playerX
     lda #$80
     sta playerY
@@ -876,10 +880,15 @@ drawBkgRoutine:
     lda needDraw
     beq NMIroutine
 
+	lda softPPU_Control
+	eor #$80
+	sta PPU_Control
+
     jsr drawBkg
+    lda softPPU_Control
+    sta PPU_Control
 
-    jmp NMIend
-
+	jmp NMIend
 NMIroutine:
     jsr nmiIndirect
 
@@ -895,16 +904,16 @@ frameDone:
     jsr latchController
 
     lda #$00
+    sta sleeping
     sta PPU_Address
     sta PPU_Address
     sta PPU_Scroll
     sta PPU_Scroll
-
+PPU:
     lda softPPU_Control
     sta PPU_Control
     lda softPPU_Mask
     sta PPU_Mask
-    dec sleeping
 
 NMIend:
     pla
@@ -927,6 +936,7 @@ sprite1:
     .db $00,$0E,%01000000,$00
     .db $00,$10,%00000000,$00
     .db $00,$10,%01000000,$00
+
 
 spriteAnim:
     .db $06,$01, $02,$00, $03,$00, $12,$00, $13,$00

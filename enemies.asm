@@ -36,7 +36,7 @@ vertical:                       ;  then update their individual enemyY and enemy
     lda enemyDir,x
     ora #facingUp
     sta enemyDir,x
-    jmp horizontal
+    bne horizontal
 @down
     lda enemyY,x
     clc
@@ -59,7 +59,7 @@ horizontal:
     lda enemyDir,x
     ora #facingLeft
     sta enemyDir,x
-    jmp @next
+    bne @next
 @right
     lda enemyX,x
     clc
@@ -163,9 +163,9 @@ loadEnemyCoords:
 @loop
     jsr random
     tay
-    lda (screenPtr),y
-    tay
-    lda metaAtb,y
+    lda colRAM,y
+;    tay
+;    lda metaAtb,y
     bne @loop
 
     lda RNG
