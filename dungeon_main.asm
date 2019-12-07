@@ -397,7 +397,7 @@ loadNametableDone:
     lda #$0C
     sta hrs
 
-    lda #$60
+    lda #$7E
     sta playerX
     lda #$80
     sta playerY

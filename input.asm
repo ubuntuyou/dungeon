@@ -17,8 +17,8 @@ latchController:
 latchControllerDone:
     rts
 
-SCREEN_TOP      = $10
-SCREEN_BOTTOM   = $C0
+SCREEN_TOP      = $04
+SCREEN_BOTTOM   = $CC
 SCREEN_LEFT     = $09
 SCREEN_RIGHT    = $F0
 

@@ -110,7 +110,7 @@ checkPlayerColV:
 
 	lda playerX
 	clc
-	adc #$07
+	adc #$08
 	sta spriteX
 	jsr compareToBkg
 	beq checkPlayerColVdone
