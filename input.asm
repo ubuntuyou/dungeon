@@ -17,8 +17,13 @@ latchController:
 latchControllerDone:
     rts
 
+    IF METAx4 = 1
 SCREEN_TOP      = $04
-SCREEN_BOTTOM   = $CC
+SCREEN_BOTTOM   = $C4
+    ELSE
+SCREEN_TOP      = $10
+SCREEN_BOTTOM   = $C4
+    ENDIF
 SCREEN_LEFT     = $09
 SCREEN_RIGHT    = $F0
 
@@ -200,6 +205,15 @@ readLeft:
     stx animConstNumber+2   ; Load constants for player animation frames
     rts                     ; Done
 checkNametableLeft:
+    lda nametable
+    tay
+    and #$0F
+    bne @skip
+    tya
+    clc
+    adc #$10
+    sta nametable
+@skip
     dec nametable           ; nametable -= #$01
     inc needDraw            ; Set needDraw flag and change gameState
     lda #$00
@@ -245,6 +259,15 @@ readRight:
     stx animConstNumber+2   ; Load constants for player animation frames
     rts                     ; Done
 checkNametableRight
+    lda nametable
+    tay
+    and #$0F
+    beq @skip
+    tya
+    sec
+    sbc #$10
+    sta nametable
+@skip
     inc nametable           ; nametable += 1
     inc needDraw            ; Set needDraw flag and change gameState
     lda #$00

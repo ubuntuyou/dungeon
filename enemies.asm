@@ -234,24 +234,46 @@ eBubble
     .db $40,%00000010,$FF,$08,$08
 
 enemyHeadersL:
-    .dl enemyHeader00, enemyHeader01, enemyHeader02, enemyHeader03, enemyHeader04
-    .dsb $0B,$00
+    .dl enemyHeader00, enemyHeader01, enemyHeader02, enemyHeader03
+    .dl enemyHeader04, enemyHeader05, enemyHeader06, enemyHeader07
+    .dl enemyHeader08, enemyHeader09, enemyHeader0A, enemyHeader0B
+    .dl enemyHeader0C, enemyHeader0D, enemyHeader0E, enemyHeader0F
+
     .dl enemyHeader10, enemyHeader11, enemyHeader12, enemyHeader13
-    .dsb $0C,$00
+    .dl enemyHeader14, enemyHeader15, enemyHeader16, enemyHeader17
+    .dl enemyHeader18, enemyHeader19, enemyHeader1A, enemyHeader1B
+    .dl enemyHeader1C, enemyHeader1D, enemyHeader1E, enemyHeader1F
+
     .dl enemyHeader20, enemyHeader21, enemyHeader22, enemyHeader23
-    .dsb $0C,$00
+    .dl enemyHeader24, enemyHeader25, enemyHeader26, enemyHeader27
+    .dl enemyHeader28, enemyHeader29, enemyHeader2A, enemyHeader2B
+    .dl enemyHeader2C, enemyHeader2D, enemyHeader2E, enemyHeader2F
+
     .dl enemyHeader30, enemyHeader31, enemyHeader32, enemyHeader33
-    .dsb $0C,$00
+    .dl enemyHeader34, enemyHeader35, enemyHeader36, enemyHeader37
+    .dl enemyHeader38, enemyHeader39, enemyHeader3A, enemyHeader3B
+    .dl enemyHeader3C, enemyHeader3D, enemyHeader3E, enemyHeader3F
 
 enemyHeadersH:
-    .dh enemyHeader00, enemyHeader01, enemyHeader02, enemyHeader03, enemyHeader04
-    .dsb $0B,$00
+    .dh enemyHeader00, enemyHeader01, enemyHeader02, enemyHeader03
+    .dh enemyHeader04, enemyHeader05, enemyHeader06, enemyHeader07
+    .dh enemyHeader08, enemyHeader09, enemyHeader0A, enemyHeader0B
+    .dh enemyHeader0C, enemyHeader0D, enemyHeader0E, enemyHeader0F
+
     .dh enemyHeader10, enemyHeader11, enemyHeader12, enemyHeader13
-    .dsb $0C,$00
+    .dh enemyHeader14, enemyHeader15, enemyHeader16, enemyHeader17
+    .dh enemyHeader18, enemyHeader19, enemyHeader1A, enemyHeader1B
+    .dh enemyHeader1C, enemyHeader1D, enemyHeader1E, enemyHeader1F
+
     .dh enemyHeader20, enemyHeader21, enemyHeader22, enemyHeader23
-    .dsb $0C,$00
+    .dh enemyHeader24, enemyHeader25, enemyHeader26, enemyHeader27
+    .dh enemyHeader28, enemyHeader29, enemyHeader2A, enemyHeader2B
+    .dh enemyHeader2C, enemyHeader2D, enemyHeader2E, enemyHeader2F
+
     .dh enemyHeader30, enemyHeader31, enemyHeader32, enemyHeader33
-    .dsb $0C,$00
+    .dh enemyHeader34, enemyHeader35, enemyHeader36, enemyHeader37
+    .dh enemyHeader38, enemyHeader39, enemyHeader3A, enemyHeader3B
+    .dh enemyHeader3C, enemyHeader3D, enemyHeader3E, enemyHeader3F
 
 enemyHeader00:
     .db $00
@@ -264,6 +286,17 @@ enemyHeader01:
 enemyHeader02:
 enemyHeader03:
 enemyHeader04:
+enemyHeader05:
+enemyHeader06:
+enemyHeader07:
+enemyHeader08:
+enemyHeader09:
+enemyHeader0A:
+enemyHeader0B:
+enemyHeader0C:
+enemyHeader0D:
+enemyHeader0E:
+enemyHeader0F:
     .db $00
 
 enemyHeader10:
@@ -279,31 +312,59 @@ enemyHeader11:
     .db $00,$08,$10,$18
 
 enemyHeader12:
-    .db $00
-
 enemyHeader13:
+enemyHeader14:
+enemyHeader15:
+enemyHeader16:
+enemyHeader17:
+enemyHeader18:
+enemyHeader19:
+enemyHeader1A:
+enemyHeader1B:
+enemyHeader1C:
+enemyHeader1D:
+enemyHeader1E:
+enemyHeader1F:
     .db $00
 
 enemyHeader20:
-    .db $00
-
 enemyHeader21:
-    .db $00
-
 enemyHeader22:
-    .db $00
-
 enemyHeader23:
+enemyHeader24:
+enemyHeader25:
+enemyHeader26:
+enemyHeader27:
+enemyHeader28:
+enemyHeader29:
+enemyHeader2A:
+enemyHeader2B:
+enemyHeader2C:
+enemyHeader2D:
+enemyHeader2E:
+enemyHeader2F:
     .db $00
 
-enemyHeader30:
-    .db $00
-enemyHeader31:
-    .db $00
-enemyHeader32:
-    .db $00
+
 enemyHeader33:
     .db $01
     .dl eBubble
     .dh eBubble
+    .db $00
+
+enemyHeader30:
+enemyHeader31:
+enemyHeader32:
+enemyHeader34:
+enemyHeader35:
+enemyHeader36:
+enemyHeader37:
+enemyHeader38:
+enemyHeader39:
+enemyHeader3A:
+enemyHeader3B:
+enemyHeader3C:
+enemyHeader3D:
+enemyHeader3E:
+enemyHeader3F:
     .db $00

@@ -3,86 +3,45 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
 	;;;  00   01   02   03   04   05   06   07   08   09   0A   0B   0C   0D   0E   0F
 	;;;  10   11   12   13   14   15   16   17   18   19   1A   1B   1C   1D   1E   1F
+	;;;  20   21
 TL:      
-	.db $05, $08, $01, $02, $02, $01, $02, $05, $01, $01, $01, $03, $05, $05, $02, $05
+	.db $05, $08, $01, $03, $02, $01, $01, $05, $01, $01, $01, $03, $05, $08, $02, $05
 	.db $05, $05, $05, $05, $0C, $03, $02, $05, $01, $05, $01, $02, $01, $02, $0C, $01
+    .db $01, $0F
 TR:
-	.db $05, $08, $02, $02, $01, $05, $05, $01, $01, $01, $05, $03, $01, $02, $05, $02
+	.db $05, $08, $03, $01, $01, $05, $08, $01, $01, $01, $05, $03, $01, $01, $05, $02
 	.db $05, $05, $05, $05, $03, $0C, $05, $02, $05, $01, $01, $05, $01, $02, $0C, $08
+    .db $01, $03
 BL:
-	.db $05, $08, $01, $05, $05, $01, $03, $05, $01, $02, $02, $08, $05, $03, $05, $05
+	.db $05, $08, $01, $08, $05, $01, $02, $05, $01, $02, $02, $08, $05, $08, $05, $05
 	.db $01, $05, $03, $05, $0C, $03, $03, $05, $02, $05, $01, $05, $02, $03, $0C, $01
+    .db $0D, $08
 BR:
-	.db $05, $08, $05, $05, $01, $05, $03, $02, $02, $01, $05, $08, $01, $03, $05, $05
+	.db $05, $08, $08, $01, $01, $05, $08, $02, $02, $01, $05, $08, $01, $02, $05, $05
 	.db $05, $01, $05, $03, $0C, $03, $05, $03, $05, $02, $01, $05, $02, $03, $0C, $08
+    .db $02, $08
 
 ;;;;;;;;;;;;;;;;;;;;;
 ;;;   METATILES   ;;;
 ;;;;;;;;;;;;;;;;;;;;;
 
-    ;;;  00   01   02   03   04   05   06   07   08   09   0A   0B   0C   0D   0E
+    ;;;  00   01   02   03   04   05   06   07   08   09   0A   0B   0C   0D   0E   0F
 topLeft:
-    .db $00, $02, $04, $06, $22, $24, $26, $28, $FE, $0A, $08, $FE, $FE, $04, $2A
+    .db $00, $02, $04, $06, $22, $24, $26, $28, $FE, $0A, $08, $FE, $FE, $04, $2A, $26
 
 topRight:
-    .db $01, $03, $05, $07, $23, $25, $27, $29, $FE, $0B, $09, $FE, $FE, $05, $2A
+    .db $01, $03, $05, $07, $23, $25, $27, $29, $FE, $0B, $09, $FE, $FE, $05, $2A, $27
 
 bottomLeft:
-    .db $10, $12, $14, $16, $32, $34, $36, $38, $FE, $1A, $18, $1A, $FE, $0A, $2A
+    .db $10, $12, $14, $16, $32, $34, $36, $38, $FE, $1A, $18, $1A, $FE, $0A, $2A, $36
 
 bottomRight:
-    .db $11, $13, $15, $17, $33, $35, $37, $39, $FE, $1B, $FE, $1B, $FE, $0B, $2A
+    .db $11, $13, $15, $17, $33, $35, $37, $39, $FE, $1B, $FE, $1B, $FE, $0B, $2A, $37
 
 metaAtb:
-    .db $01, $01, $01, $01, $00, $00, $00, $00, $01, $01, $01, $01, $00, $01, $00
+    .db $01, $01, $01, $01, $00, $00, $00, $00, $01, $01, $01, $01, $00, $01, $00, $01
 
-; metaBackground:
-;     lda #$00
-;     sta metatile
-;     eor #$0F
-;     sta rowCounter
-; @top:
-;     lda #$10
-;     sta counter
-; 
-;     ldy metatile
-; @loop:
-;     lda (screenPtr),y
-;     tax
-;     lda topLeft,x
-;     sta PPU_Data
-;     lda topRight,x
-;     sta PPU_Data
-;     iny
-;     dec counter
-;     bne @loop
-; 
-;     tya
-;     sec
-;     sbc #$10
-;     tay
-; 
-;     lda #$10
-;     sta counter
-; @loop2:
-;     lda (screenPtr),y
-;     tax
-;     lda bottomLeft,x
-;     sta PPU_Data
-;     lda bottomRight,x
-;     sta PPU_Data
-;     lda metaAtb,x
-;     sta colRAM,y
-;     iny
-;     dec counter
-;     bne @loop2
-;     
-;     sty metatile
-; 
-;     dec rowCounter
-;     bne @top
-; metaBackgroundDone:
-;     rts
+    IF METAx4 = 1
 
 metaBackground:
     lda #$00
@@ -224,6 +183,58 @@ metaBackground:
     jmp @top
 metaBackgroundDone:
     rts
+    
+    ELSEIF METAx4 = 0
+    
+metaBackground:
+    lda #$00
+    sta metatile
+    eor #$0F
+    sta rowCounter
+@top:
+    lda #$10
+    sta counter
+
+    ldy metatile
+@loop:
+    lda (screenPtr),y
+    tax
+    lda topLeft,x
+    sta PPU_Data
+    lda topRight,x
+    sta PPU_Data
+    iny
+    dec counter
+    bne @loop
+
+    tya
+    sec
+    sbc #$10
+    tay
+
+    lda #$10
+    sta counter
+@loop2:
+    lda (screenPtr),y
+    tax
+    lda bottomLeft,x
+    sta PPU_Data
+    lda bottomRight,x
+    sta PPU_Data
+    lda metaAtb,x
+    sta colRAM,y
+    iny
+    dec counter
+    bne @loop2
+    
+    sty metatile
+
+    dec rowCounter
+    bne @top
+metaBackgroundDone:
+    rts
+
+ENDIF
 
 loadAttributes:
     ldy #$00                ; Load background attributes to PPU
@@ -368,24 +379,46 @@ fillPPUbufferDone:
     rts
 
 itemHeadersL:
-    .dl itemHeader00, itemHeader01, itemHeader02, itemHeader03, itemHeader04
-    .dsb $0B,$00
-    .dl itemHeader10, itemHeader11, itemHeader12, itemHeader13 
-    .dsb $0C,$00
+    .dl itemHeader00, itemHeader01, itemHeader02, itemHeader03
+    .dl itemHeader04, itemHeader05, itemHeader06, itemHeader07
+    .dl itemHeader08, itemHeader09, itemHeader0A, itemHeader0B
+    .dl itemHeader0C, itemHeader0D, itemHeader0E, itemHeader0F
+
+    .dl itemHeader10, itemHeader11, itemHeader12, itemHeader13
+    .dl itemHeader14, itemHeader15, itemHeader16, itemHeader17
+    .dl itemHeader18, itemHeader19, itemHeader1A, itemHeader1B
+    .dl itemHeader1C, itemHeader1D, itemHeader1E, itemHeader1F
+
     .dl itemHeader20, itemHeader21, itemHeader22, itemHeader23
-    .dsb $0C,$00
+    .dl itemHeader24, itemHeader25, itemHeader26, itemHeader27
+    .dl itemHeader28, itemHeader29, itemHeader2A, itemHeader2B
+    .dl itemHeader2C, itemHeader2D, itemHeader2E, itemHeader2F
+
     .dl itemHeader30, itemHeader31, itemHeader32, itemHeader33
-    .dsb $0C,$00
+    .dl itemHeader34, itemHeader35, itemHeader36, itemHeader37
+    .dl itemHeader38, itemHeader39, itemHeader3A, itemHeader3B
+    .dl itemHeader3C, itemHeader3D, itemHeader3E, itemHeader3F
 
 itemHeadersH:
-    .dh itemHeader00, itemHeader01, itemHeader02, itemHeader03, itemHeader04
-    .dsb $0B,$00
+    .dh itemHeader00, itemHeader01, itemHeader02, itemHeader03
+    .dh itemHeader04, itemHeader05, itemHeader06, itemHeader07
+    .dh itemHeader08, itemHeader09, itemHeader0A, itemHeader0B
+    .dh itemHeader0C, itemHeader0D, itemHeader0E, itemHeader0F
+
     .dh itemHeader10, itemHeader11, itemHeader12, itemHeader13
-    .dsb $0C,$00
+    .dh itemHeader14, itemHeader15, itemHeader16, itemHeader17
+    .dh itemHeader18, itemHeader19, itemHeader1A, itemHeader1B
+    .dh itemHeader1C, itemHeader1D, itemHeader1E, itemHeader1F
+
     .dh itemHeader20, itemHeader21, itemHeader22, itemHeader23
-    .dsb $0C,$00
+    .dh itemHeader24, itemHeader25, itemHeader26, itemHeader27
+    .dh itemHeader28, itemHeader29, itemHeader2A, itemHeader2B
+    .dh itemHeader2C, itemHeader2D, itemHeader2E, itemHeader2F
+
     .dh itemHeader30, itemHeader31, itemHeader32, itemHeader33
-    .dsb $0C,$00
+    .dh itemHeader34, itemHeader35, itemHeader36, itemHeader37
+    .dh itemHeader38, itemHeader39, itemHeader3A, itemHeader3B
+    .dh itemHeader3C, itemHeader3D, itemHeader3E, itemHeader3F
     
 itemFlags:
     .db %00000111, %00000001, %00000000, %00000000, %00000000
@@ -406,15 +439,15 @@ itemConstants:
     .db $00, $10, $20, $30
 
 itemHeader00:
-    .db $6F,$33,%00000000,$70
-    .db $6F,$33,%01000000,$78
-    .db $77,$34,%00000000,$70
-    .db $77,$34,%01000000,$78
-
     .db $6F,$33,%00000000,$80
     .db $6F,$33,%01000000,$88
     .db $77,$34,%00000000,$80
     .db $77,$34,%01000000,$88
+
+    .db $6F,$33,%00000000,$90
+    .db $6F,$33,%01000000,$98
+    .db $77,$34,%00000000,$90
+    .db $77,$34,%01000000,$98
 
     .db $FF
 
@@ -428,6 +461,17 @@ itemHeader01:
 itemHeader02:
 itemHeader03:
 itemHeader04:
+itemHeader05:
+itemHeader06:
+itemHeader07:
+itemHeader08:
+itemHeader09:
+itemHeader0A:
+itemHeader0B:
+itemHeader0C:
+itemHeader0D:
+itemHeader0E:
+itemHeader0F:
     .db $FF
 
 itemHeader10:
@@ -447,8 +491,6 @@ itemHeader10:
     .db $57,$34,%01000000,$58
     .db $FF
 
-itemHeader11:
-    .db $FF
 
 itemHeader12:
     .db $7F,$33,%00000000,$30
@@ -462,11 +504,22 @@ itemHeader12:
     .db $A7,$34,%01000000,$A8
     .db $FF
 
+itemHeader11:
 itemHeader13:
+itemHeader14:
+itemHeader15:
+itemHeader16:
+itemHeader17:
+itemHeader18:
+itemHeader19:
+itemHeader1A:
+itemHeader1B:
+itemHeader1C:
+itemHeader1D:
+itemHeader1E:
+itemHeader1F:
     .db $FF
 
-itemHeader20:
-    .db $FF
 
 itemHeader21:
     .db $7F,$33,%00000000,$78
@@ -475,21 +528,44 @@ itemHeader21:
     .db $87,$34,%01000000,$80
     .db $FF
 
+itemHeader20:
 itemHeader22:
-    .db $FF
-
 itemHeader23:
+itemHeader24:
+itemHeader25:
+itemHeader26:
+itemHeader27:
+itemHeader28:
+itemHeader29:
+itemHeader2A:
+itemHeader2B:
+itemHeader2C:
+itemHeader2D:
+itemHeader2E:
+itemHeader2F:
     .db $FF
 
-itemHeader30:
-    .db $FF
-itemHeader31:
-    .db $FF
-itemHeader32:
-    .db $FF
+
 itemHeader33:
     .db $9F,$33,%00000000,$A0
     .db $9F,$33,%01000000,$A8
     .db $A7,$34,%00000000,$A0
     .db $A7,$34,%01000000,$A8
+    .db $FF
+    
+itemHeader30:
+itemHeader31:
+itemHeader32:
+itemHeader34:
+itemHeader35:
+itemHeader36:
+itemHeader37:
+itemHeader38:
+itemHeader39:
+itemHeader3A:
+itemHeader3B:
+itemHeader3C:
+itemHeader3D:
+itemHeader3E:
+itemHeader3F:
     .db $FF

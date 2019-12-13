@@ -26,6 +26,7 @@ itemHdrPtr      .dsb 2
 textBoxPtr      .dsb 2
 enemyPtr        .dsb 2
 enemyDefPtr     .dsb 2
+palettePtr      .dsb 2
 
     .enum $0040
 gameState       .dsb 1
@@ -33,6 +34,8 @@ softPPU_Control .dsb 1
 softPPU_Mask    .dsb 1
 prgNo           .dsb 1
 prgNoOld        .dsb 1
+paletteCtr      .dsb 1
+paletteCounter  .dsb 1
 
     .enum $0050
 
@@ -397,9 +400,9 @@ loadNametableDone:
     lda #$0C
     sta hrs
 
-    lda #$7E
+    lda #$85
     sta playerX
-    lda #$80
+    lda #$A0
     sta playerY
     
     lda #$07
@@ -849,14 +852,14 @@ loop:
 
     jsr mainIndirect
 
-showCPUusageBar:
-    ldx #%00011111      ; sprites + background + monochrome (i.e. WHITE)
-    stx PPU_Mask
-    ldy #$08            ; add about 23 for each additional line (leave it on WHITE for one scan line)
--   dey
-    bne -
-    dex                 ; sprites + background + NO monochrome  (i.e. #%00011110)
-    stx PPU_Mask
+; showCPUusageBar:
+;     ldx #%00011111      ; sprites + background + monochrome (i.e. WHITE)
+;     stx PPU_Mask
+;     ldy #$08            ; add about 23 for each additional line (leave it on WHITE for one scan line)
+; -   dey
+;     bne -
+;     dex                 ; sprites + background + NO monochrome  (i.e. #%00011110)
+;     stx PPU_Mask
 
     jmp MAIN
 
@@ -900,6 +903,40 @@ frame:
     and #$00
     sta frameCounter
 frameDone:
+
+paletteSwap:
+    dec paletteCounter
+    lda paletteCounter
+    bne paletteSwapDone
+    ora #$18
+    sta paletteCounter
+
+    lda PPU_Status
+    lda #$3F
+    sta PPU_Address
+    lda #$08
+    sta PPU_Address
+
+    ldy paletteCtr
+    iny
+    cpy #$03
+    bne @skip1
+    ldy #$00
+@skip1
+    sty paletteCtr
+
+    lda palettesL,y
+    sta palettePtr
+    lda palettesH,y
+    sta palettePtr+1
+
+    ldy #$04
+@loop
+    lda (palettePtr),y
+    sta PPU_Data
+    dey
+    bne @loop
+paletteSwapDone:
 
     jsr latchController
 
@@ -958,9 +995,22 @@ spriteAnim:
 animationConstants:
     .db $00,$0A,$14,$1E,$28,$32
     .db $3C,$46,$50,$5A,$64,$6E
+    
+palettesL:
+    .dl water0, water1, water2
+
+palettesH:
+    .dh water0, water1, water2
+    
+water2:
+    .db $0F, $01, $11, $21
+water1:
+    .db $0F, $21, $01, $11
+water0:
+    .db $0F, $11, $21, $01
 
 palette:
-    .db $0F,$2D,$10,$20,  $0F,$08,$0A,$0C,  $0F,$03,$12,$13,  $0F,$0C,$16,$30   ;;background palette
+    .db $0F,$2D,$10,$20,  $0F,$08,$0A,$0C,  $0F,$01,$11,$21,  $0F,$0C,$16,$30   ;;background palette
     .db $0F,$17,$00,$10,  $0F,$17,$28,$39,  $0F,$20,$10,$00,  $0F,$17,$1A,$29   ;;sprite palette
 
     .pad $FFFA
