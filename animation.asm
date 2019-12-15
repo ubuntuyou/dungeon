@@ -19,12 +19,13 @@ frameCheck:
     bne playingFrame1
 
     ldx frameCounter          ; Load frameCounter
+    cpx #$30
     beq playingFrame1         ; Determine which frame to setup
-    cpx #$0C
+    cpx #$24
     beq playingFrame2
     cpx #$18
     beq playingFrame3
-    cpx #$24
+    cpx #$0C
     beq playingFrame2
     rts                       ; If no change needed then skip setup
 

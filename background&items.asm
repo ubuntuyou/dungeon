@@ -1,25 +1,26 @@
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;;   META-METATILES   ;;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
 	;;;  00   01   02   03   04   05   06   07   08   09   0A   0B   0C   0D   0E   0F
 	;;;  10   11   12   13   14   15   16   17   18   19   1A   1B   1C   1D   1E   1F
-	;;;  20   21
+	;;;  20   21   22
 TL:      
 	.db $05, $08, $01, $03, $02, $01, $01, $05, $01, $01, $01, $03, $05, $08, $02, $05
 	.db $05, $05, $05, $05, $0C, $03, $02, $05, $01, $05, $01, $02, $01, $02, $0C, $01
-    .db $01, $0F
+    .db $01, $0F, $07
 TR:
 	.db $05, $08, $03, $01, $01, $05, $08, $01, $01, $01, $05, $03, $01, $01, $05, $02
 	.db $05, $05, $05, $05, $03, $0C, $05, $02, $05, $01, $01, $05, $01, $02, $0C, $08
-    .db $01, $03
+    .db $01, $07, $03
 BL:
 	.db $05, $08, $01, $08, $05, $01, $02, $05, $01, $02, $02, $08, $05, $08, $05, $05
 	.db $01, $05, $03, $05, $0C, $03, $03, $05, $02, $05, $01, $05, $02, $03, $0C, $01
-    .db $0D, $08
+    .db $0D, $08, $08
 BR:
 	.db $05, $08, $08, $01, $01, $05, $08, $02, $02, $01, $05, $08, $01, $02, $05, $05
 	.db $05, $01, $05, $03, $0C, $03, $05, $03, $05, $02, $01, $05, $02, $03, $0C, $08
-    .db $02, $08
+    .db $02, $08, $08
 
 ;;;;;;;;;;;;;;;;;;;;;
 ;;;   METATILES   ;;;
@@ -40,8 +41,6 @@ bottomRight:
 
 metaAtb:
     .db $01, $01, $01, $01, $00, $00, $00, $00, $01, $01, $01, $01, $00, $01, $00, $01
-
-    IF METAx4 = 1
 
 metaBackground:
     lda #$00
@@ -183,58 +182,54 @@ metaBackground:
     jmp @top
 metaBackgroundDone:
     rts
-    
-    ELSEIF METAx4 = 0
-    
-metaBackground:
-    lda #$00
-    sta metatile
-    eor #$0F
-    sta rowCounter
-@top:
-    lda #$10
-    sta counter
 
-    ldy metatile
-@loop:
-    lda (screenPtr),y
-    tax
-    lda topLeft,x
-    sta PPU_Data
-    lda topRight,x
-    sta PPU_Data
-    iny
-    dec counter
-    bne @loop
-
-    tya
-    sec
-    sbc #$10
-    tay
-
-    lda #$10
-    sta counter
-@loop2:
-    lda (screenPtr),y
-    tax
-    lda bottomLeft,x
-    sta PPU_Data
-    lda bottomRight,x
-    sta PPU_Data
-    lda metaAtb,x
-    sta colRAM,y
-    iny
-    dec counter
-    bne @loop2
-    
-    sty metatile
-
-    dec rowCounter
-    bne @top
-metaBackgroundDone:
-    rts
-
-ENDIF
+; metaBackground:
+;     lda #$00
+;     sta metatile
+;     eor #$0F
+;     sta rowCounter
+; @top:
+;     lda #$10
+;     sta counter
+; 
+;     ldy metatile
+; @loop:
+;     lda (screenPtr),y
+;     tax
+;     lda topLeft,x
+;     sta PPU_Data
+;     lda topRight,x
+;     sta PPU_Data
+;     iny
+;     dec counter
+;     bne @loop
+; 
+;     tya
+;     sec
+;     sbc #$10
+;     tay
+; 
+;     lda #$10
+;     sta counter
+; @loop2:
+;     lda (screenPtr),y
+;     tax
+;     lda bottomLeft,x
+;     sta PPU_Data
+;     lda bottomRight,x
+;     sta PPU_Data
+;     lda metaAtb,x
+;     sta colRAM,y
+;     iny
+;     dec counter
+;     bne @loop2
+;     
+;     sty metatile
+; 
+;     dec rowCounter
+;     bne @top
+; metaBackgroundDone:
+;     rts
 
 loadAttributes:
     ldy #$00                ; Load background attributes to PPU

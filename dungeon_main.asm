@@ -424,6 +424,14 @@ loadNametableDone:
 
     lda #$FF
     sta RNGseed
+    
+    lda #$18
+    sta paletteCounter
+    lda #$04
+    sta paletteCtr
+    
+    lda #$30
+    sta frameCounter
 
     jsr loadFlags
 
@@ -896,47 +904,28 @@ NMIroutine:
     jsr nmiIndirect
 
 frame:
-    inc frameCounter
+    dec frameCounter
     lda frameCounter
-    cmp #$30
     bne frameDone
-    and #$00
+    ora #$30
     sta frameCounter
 frameDone:
 
-paletteSwap:
+PRGswap:
     dec paletteCounter
     lda paletteCounter
-    bne paletteSwapDone
-    ora #$18
+    bne PRGswapDone
+    ora #$0A
     sta paletteCounter
-
-    lda PPU_Status
-    lda #$3F
-    sta PPU_Address
-    lda #$08
-    sta PPU_Address
-
-    ldy paletteCtr
-    iny
-    cpy #$03
-    bne @skip1
-    ldy #$00
-@skip1
-    sty paletteCtr
-
-    lda palettesL,y
-    sta palettePtr
-    lda palettesH,y
-    sta palettePtr+1
-
-    ldy #$04
-@loop
-    lda (palettePtr),y
-    sta PPU_Data
-    dey
-    bne @loop
-paletteSwapDone:
+    
+    dec paletteCtr
+    lda paletteCtr
+    bne @skip
+    lda #$03
+    sta paletteCtr
+@skip
+    jsr setMapperCHR1
+PRGswapDone:
 
     jsr latchController
 
@@ -1002,15 +991,16 @@ palettesL:
 palettesH:
     .dh water0, water1, water2
     
-water2:
-    .db $0F, $01, $11, $21
-water1:
-    .db $0F, $21, $01, $11
 water0:
-    .db $0F, $11, $21, $01
+    .db $0F, $01, $21, $11
+water1:
+    .db $0F, $21, $11, $01
+water2:
+    .db $0F, $11, $01, $21
+
 
 palette:
-    .db $0F,$2D,$10,$20,  $0F,$08,$0A,$0C,  $0F,$01,$11,$21,  $0F,$0C,$16,$30   ;;background palette
+    .db $0F,$2D,$10,$20,  $0F,$08,$0A,$0C,  $0F,$01,$11,$21,  $0F,$2D,$09,$1A   ;;background palette
     .db $0F,$17,$00,$10,  $0F,$17,$28,$39,  $0F,$20,$10,$00,  $0F,$17,$1A,$29   ;;sprite palette
 
     .pad $FFFA

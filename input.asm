@@ -17,13 +17,9 @@ latchController:
 latchControllerDone:
     rts
 
-    IF METAx4 = 1
 SCREEN_TOP      = $04
-SCREEN_BOTTOM   = $C4
-    ELSE
-SCREEN_TOP      = $10
-SCREEN_BOTTOM   = $C4
-    ENDIF
+SCREEN_BOTTOM   = $C8
+
 SCREEN_LEFT     = $09
 SCREEN_RIGHT    = $F0
 
@@ -75,7 +71,7 @@ readUp:
     lda oldButtons
     and #%00001000          ; If Up is pressed and was pressed last frame then we're done
     bne @skip
-    lda #$FF
+    lda #$30
     sta frameCounter        ; Else initialize frameCounter for movement animation in new direction
 
 @skip
@@ -126,7 +122,7 @@ readDown:
     lda oldButtons
     and #%00000100          ; If Right is pressed and was pressed last frame then we're done
     bne @skip
-    lda #$FF
+    lda #$30
     sta frameCounter        ; Else initialize frame counter for movement animation in new direction
 
 @skip
@@ -174,7 +170,7 @@ readLeft:
     lda oldButtons
     and #%00000010          ; If left is pressed and was pressed last frame then we're done
     bne @skip
-    lda #$FF
+    lda #$30
     sta frameCounter        ; Else initialize frame counter for movement animation in new direction
 
 @skip
@@ -205,16 +201,17 @@ readLeft:
     stx animConstNumber+2   ; Load constants for player animation frames
     rts                     ; Done
 checkNametableLeft:
+    dec nametable
     lda nametable
     tay
     and #$0F
+    cmp #$0F
     bne @skip
     tya
     clc
     adc #$10
     sta nametable
 @skip
-    dec nametable           ; nametable -= #$01
     inc needDraw            ; Set needDraw flag and change gameState
     lda #$00
     sta gameState
@@ -231,7 +228,7 @@ readRight:
     lda oldButtons
     and #%00000001          ; If Right is pressed and was pressed last frame then we're done
     bne @skip
-    lda #$FF
+    lda #$30
     sta frameCounter        ; Initialize frame counter for movement animation in new direction
 
 @skip
@@ -259,16 +256,16 @@ readRight:
     stx animConstNumber+2   ; Load constants for player animation frames
     rts                     ; Done
 checkNametableRight
+    inc nametable
     lda nametable
     tay
     and #$0F
-    beq @skip
+    bne @skip
     tya
     sec
     sbc #$10
     sta nametable
 @skip
-    inc nametable           ; nametable += 1
     inc needDraw            ; Set needDraw flag and change gameState
     lda #$00
     sta gameState
