@@ -230,7 +230,7 @@ enemyDefsH:
 
 slime:
     .db $35,%00000011,$35,%01000011,$FF,$08,$0E
-eBubble
+eBubble:
     .db $40,%00000010,$FF,$08,$08
 
 enemyHeadersL:
@@ -283,6 +283,7 @@ enemyHeader01:
     .dl slime               ; Low byte of pointer to enemyDef
     .dh slime               ; High byte of pointer to enemyDef
     .db $00,$08,$10,$18     ; Index values for enemyRAM offsets
+    
 enemyHeader02:
 enemyHeader03:
 enemyHeader04:
@@ -312,6 +313,7 @@ enemyHeader11:
     .db $00,$08,$10,$18
 
 enemyHeader12:
+
 enemyHeader13:
 enemyHeader14:
 enemyHeader15:

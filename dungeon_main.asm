@@ -389,7 +389,7 @@ loadSprite1done:
 loadNametable:
     lda #$01
     sta needDraw
-    lda #$00
+    lda #$02 ;lda #$00
     sta nametable
 loadNametableDone:
 
@@ -400,7 +400,7 @@ loadNametableDone:
     lda #$0C
     sta hrs
 
-    lda #$85
+    lda #$95
     sta playerX
     lda #$A0
     sta playerY
@@ -427,7 +427,7 @@ loadNametableDone:
     
     lda #$18
     sta paletteCounter
-    lda #$04
+    lda #$03
     sta paletteCtr
     
     lda #$30
@@ -911,21 +911,42 @@ frame:
     sta frameCounter
 frameDone:
 
-PRGswap:
+; Changes palette every 10 frames
+paletteSwap:
     dec paletteCounter
     lda paletteCounter
-    bne PRGswapDone
-    ora #$0A
+    bne paletteSwapDone         ; Skip if not $00
+    ora #$0A                    ; If $00 reset to $0A
     sta paletteCounter
     
     dec paletteCtr
     lda paletteCtr
-    bne @skip
-    lda #$03
+    bpl @skip                   ; Skip if >= $00
+    lda #$02
     sta paletteCtr
 @skip
-    jsr setMapperCHR1
-PRGswapDone:
+    tax                         ; Use paletteCtr as index for water palettes
+    lda PPU_Status
+    lda #$3F
+    sta PPU_Address
+    lda #$09
+    sta PPU_Address
+    
+    lda palettesL,x
+    sta palettePtr
+    lda palettesH,x
+    sta palettePtr+1
+
+    ldy #$00                    ; Write the new palette to the PPU_Data
+    lda (palettePtr),y
+    sta PPU_Data
+    iny
+    lda (palettePtr),y
+    sta PPU_Data
+    iny
+    lda (palettePtr),y
+    sta PPU_Data
+paletteSwapDone:
 
     jsr latchController
 
@@ -992,16 +1013,23 @@ palettesH:
     .dh water0, water1, water2
     
 water0:
-    .db $0F, $01, $21, $11
+    .db $21, $2C, $31
 water1:
-    .db $0F, $21, $11, $01
+    .db $2C, $31, $21
 water2:
-    .db $0F, $11, $01, $21
+    .db $31, $21, $2C
 
 
 palette:
-    .db $0F,$2D,$10,$20,  $0F,$08,$0A,$0C,  $0F,$01,$11,$21,  $0F,$2D,$09,$1A   ;;background palette
-    .db $0F,$17,$00,$10,  $0F,$17,$28,$39,  $0F,$20,$10,$00,  $0F,$17,$1A,$29   ;;sprite palette
+    .db $0F,$2D,$10,$20
+    .db $0F,$07,$0C,$16   ;$08,$0A,$0C
+    .db $0F,$21,$2C,$31   ; Animated water
+    .db $0F,$2D,$09,$1A   ;background palette
+    
+    .db $0F,$17,$00,$10
+    .db $0F,$17,$28,$39
+    .db $0F,$20,$10,$00
+    .db $0F,$17,$1A,$29   ;;sprite palette
 
     .pad $FFFA
 
